@@ -1,0 +1,17 @@
+# Xcode / Swift
+build/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+*.swiftpm/
+.build/
+Packages/
+
+# macOS
+.DS_Store
+
+# XcodeGen-generated project (keep project.yml authoritative; uncomment to ignore)
+# CyberbitsDefcon.xcodeproj/

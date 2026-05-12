@@ -1,0 +1,601 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		04472A67DDF9FC7192555FCE /* DefconStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C39F381C97107D22C9237201 /* DefconStatus.swift */; };
+		14089C19FF5F1701D57EDB9D /* DefconGauge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D09E3F46F9D7697B4193E27 /* DefconGauge.swift */; };
+		16B958774D8AAE0C32BEB8F4 /* TrendingKeywords.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22B981E76CE4E86BE7441168 /* TrendingKeywords.swift */; };
+		1F891A4CE78492BE2566D9DD /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E773D9C9AE524E313F2C95 /* NotificationScheduler.swift */; };
+		27DF2B6E7FF05B061B85668A /* Deduplicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D8921878DB8E3A41E7868B /* Deduplicator.swift */; };
+		2839E0C0F03EB2CBA3044B17 /* ArticleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554433608127759E23797870 /* ArticleStore.swift */; };
+		373E6BF63B27B73FD4494F5B /* ArticlesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07F50CB5C38DD1C5DEAD7114 /* ArticlesView.swift */; };
+		3781E6F246A03F0C0F53E323 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C369D41E7B41B02004A8BF65 /* RootView.swift */; };
+		3B1A60B0B6EC927A0C42C19E /* FeedParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */; };
+		4553FA031D7C640E2085D3D8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C3320EB1F83B2451CBD6B55 /* AppDelegate.swift */; };
+		59544305AD9F8F68FEF69836 /* DefconColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A30598B38389639349AEF656 /* DefconColors.swift */; };
+		5B59892540B1E8DA6B0DCACA /* DeduplicatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7901B71EEA9C225E1A9B78A4 /* DeduplicatorTests.swift */; };
+		5FF9C2E4B21A2205DF4DF510 /* SeverityBreakdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67E663353A9B90DF4A66E68 /* SeverityBreakdown.swift */; };
+		66CBC4522C51B337843AC1FC /* CyberbitsDefconApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D8892E7163E564C5837964 /* CyberbitsDefconApp.swift */; };
+		767B84E13A26FB82687A5DD6 /* RecentCVEs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1CD7BCF5C83BFD0FEFEFF9 /* RecentCVEs.swift */; };
+		8FD7E9B2340491B71A993A1F /* Scorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7EDF19F655196720043AAE /* Scorer.swift */; };
+		9967415043DCF644256B299A /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 745A5C6AA7CE058A7D7F9A54 /* DashboardView.swift */; };
+		9A0A37576A0CA19B7F64A4AE /* ScorerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FC2E3D07513FD08F12B9BC /* ScorerTests.swift */; };
+		9AE2783176556E95DF1B9EC9 /* FilterBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76607B6892DA6663CF4B3E37 /* FilterBar.swift */; };
+		9FB6377265D523D6027F5AF8 /* FeedSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F34F4E34874E364306B9595 /* FeedSource.swift */; };
+		A95C3CA01A7BF7941DE61E14 /* FeedParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22F7422824CDE4208EAB337 /* FeedParser.swift */; };
+		B1F2394D715011A7A5311407 /* DataStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB5CB3A2C9FCEB3619D44D83 /* DataStoreTests.swift */; };
+		B646FE0E75B1E36D0473683D /* FetchCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F2EC68FB750A6713729D796 /* FetchCoordinator.swift */; };
+		B905346831E229DAD2F7ECE9 /* Article.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0088F69682BB0AAB9EC19CC9 /* Article.swift */; };
+		BA91F31CA764BB2D777666DA /* DefconHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B13C5679F02B1CFDC96EA2 /* DefconHistory.swift */; };
+		DA0CCF60BEC7CE2F0427E128 /* TopThreatsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE5C688E593985D49571B888 /* TopThreatsWidget.swift */; };
+		E0736C7F3B8235525ECF71CC /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6767A18D15C4C1DC144B00BF /* SettingsView.swift */; };
+		E3797B4E3E0EE94B5530DC74 /* RawArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D3D46C7834B6FE198030B /* RawArticle.swift */; };
+		E3965BEB5D494D62C28AFD86 /* FactorScoresWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D81CEE7B0D0EC1AE71F0AF /* FactorScoresWidget.swift */; };
+		ECBAEA63E2846F1EDC22D354 /* DefconStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF64E89E1AB6F4156AAE169B /* DefconStore.swift */; };
+		EECC865F2740EBE667334800 /* ArticleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C660A11670C090E823832ABB /* ArticleRow.swift */; };
+		F381F8D5090C04E9180CC30E /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */; };
+		F9787FA8944EF4A9C36D5315 /* SourceDistribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688C0CA42AD70850EA84E429 /* SourceDistribution.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C6D94480AFBB7F5E76A7570A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6C6D74A0174BC45370DB4419 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9EC4A9AC637BFF1B5D2939F9;
+			remoteInfo = CyberbitsDefcon;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0088F69682BB0AAB9EC19CC9 /* Article.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Article.swift; sourceTree = "<group>"; };
+		07F50CB5C38DD1C5DEAD7114 /* ArticlesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticlesView.swift; sourceTree = "<group>"; };
+		0F2EC68FB750A6713729D796 /* FetchCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCoordinator.swift; sourceTree = "<group>"; };
+		0FB6CB0DC1C50493D90C8104 /* CyberbitsDefcon.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CyberbitsDefcon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		18B13C5679F02B1CFDC96EA2 /* DefconHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconHistory.swift; sourceTree = "<group>"; };
+		1C3320EB1F83B2451CBD6B55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParserTests.swift; sourceTree = "<group>"; };
+		22B981E76CE4E86BE7441168 /* TrendingKeywords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendingKeywords.swift; sourceTree = "<group>"; };
+		27FC2E3D07513FD08F12B9BC /* ScorerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScorerTests.swift; sourceTree = "<group>"; };
+		2D09E3F46F9D7697B4193E27 /* DefconGauge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconGauge.swift; sourceTree = "<group>"; };
+		346D3D46C7834B6FE198030B /* RawArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawArticle.swift; sourceTree = "<group>"; };
+		49D8921878DB8E3A41E7868B /* Deduplicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deduplicator.swift; sourceTree = "<group>"; };
+		4F34F4E34874E364306B9595 /* FeedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSource.swift; sourceTree = "<group>"; };
+		554433608127759E23797870 /* ArticleStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleStore.swift; sourceTree = "<group>"; };
+		6767A18D15C4C1DC144B00BF /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		688C0CA42AD70850EA84E429 /* SourceDistribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceDistribution.swift; sourceTree = "<group>"; };
+		745A5C6AA7CE058A7D7F9A54 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		75C8C8554A429D6BF6307556 /* CyberbitsDefconTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = CyberbitsDefconTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		76607B6892DA6663CF4B3E37 /* FilterBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterBar.swift; sourceTree = "<group>"; };
+		7901B71EEA9C225E1A9B78A4 /* DeduplicatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeduplicatorTests.swift; sourceTree = "<group>"; };
+		80E773D9C9AE524E313F2C95 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+		94D8892E7163E564C5837964 /* CyberbitsDefconApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyberbitsDefconApp.swift; sourceTree = "<group>"; };
+		9C1CD7BCF5C83BFD0FEFEFF9 /* RecentCVEs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentCVEs.swift; sourceTree = "<group>"; };
+		9CA79E6490E7F017BA26A205 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A30598B38389639349AEF656 /* DefconColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconColors.swift; sourceTree = "<group>"; };
+		A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		A67E663353A9B90DF4A66E68 /* SeverityBreakdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeverityBreakdown.swift; sourceTree = "<group>"; };
+		B1D81CEE7B0D0EC1AE71F0AF /* FactorScoresWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FactorScoresWidget.swift; sourceTree = "<group>"; };
+		BB5CB3A2C9FCEB3619D44D83 /* DataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStoreTests.swift; sourceTree = "<group>"; };
+		C369D41E7B41B02004A8BF65 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		C39F381C97107D22C9237201 /* DefconStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconStatus.swift; sourceTree = "<group>"; };
+		C660A11670C090E823832ABB /* ArticleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleRow.swift; sourceTree = "<group>"; };
+		DE5C688E593985D49571B888 /* TopThreatsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopThreatsWidget.swift; sourceTree = "<group>"; };
+		EC7EDF19F655196720043AAE /* Scorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scorer.swift; sourceTree = "<group>"; };
+		F22F7422824CDE4208EAB337 /* FeedParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParser.swift; sourceTree = "<group>"; };
+		FF64E89E1AB6F4156AAE169B /* DefconStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconStore.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		1ACB65626F884CAB3BBF006E /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				745A5C6AA7CE058A7D7F9A54 /* DashboardView.swift */,
+				2D09E3F46F9D7697B4193E27 /* DefconGauge.swift */,
+				B1D81CEE7B0D0EC1AE71F0AF /* FactorScoresWidget.swift */,
+				9C1CD7BCF5C83BFD0FEFEFF9 /* RecentCVEs.swift */,
+				A67E663353A9B90DF4A66E68 /* SeverityBreakdown.swift */,
+				688C0CA42AD70850EA84E429 /* SourceDistribution.swift */,
+				DE5C688E593985D49571B888 /* TopThreatsWidget.swift */,
+				22B981E76CE4E86BE7441168 /* TrendingKeywords.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		40F130D67987B2EC68609D33 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */,
+				A30598B38389639349AEF656 /* DefconColors.swift */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		471FD6BFEBC93B5C8B1F5917 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0088F69682BB0AAB9EC19CC9 /* Article.swift */,
+				18B13C5679F02B1CFDC96EA2 /* DefconHistory.swift */,
+				C39F381C97107D22C9237201 /* DefconStatus.swift */,
+				4F34F4E34874E364306B9595 /* FeedSource.swift */,
+				346D3D46C7834B6FE198030B /* RawArticle.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		692DB0BD0BB2518CEDA6AC04 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C369D41E7B41B02004A8BF65 /* RootView.swift */,
+				6BAB233632436B0C3EB6B255 /* Articles */,
+				1ACB65626F884CAB3BBF006E /* Dashboard */,
+				EF84FB218299B6E0DAD1AD75 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		6BAB233632436B0C3EB6B255 /* Articles */ = {
+			isa = PBXGroup;
+			children = (
+				C660A11670C090E823832ABB /* ArticleRow.swift */,
+				07F50CB5C38DD1C5DEAD7114 /* ArticlesView.swift */,
+				76607B6892DA6663CF4B3E37 /* FilterBar.swift */,
+			);
+			path = Articles;
+			sourceTree = "<group>";
+		};
+		7042482C5FC7DFCEC1BA2B1F /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0FB6CB0DC1C50493D90C8104 /* CyberbitsDefcon.app */,
+				75C8C8554A429D6BF6307556 /* CyberbitsDefconTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		85B4AF3D5AE11EFD3CF1EF09 = {
+			isa = PBXGroup;
+			children = (
+				F67F750397FE417163103EF5 /* CyberbitsDefcon */,
+				99626BB62E1149B18D0EB921 /* CyberbitsDefconTests */,
+				7042482C5FC7DFCEC1BA2B1F /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		99626BB62E1149B18D0EB921 /* CyberbitsDefconTests */ = {
+			isa = PBXGroup;
+			children = (
+				BB5CB3A2C9FCEB3619D44D83 /* DataStoreTests.swift */,
+				7901B71EEA9C225E1A9B78A4 /* DeduplicatorTests.swift */,
+				1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */,
+				27FC2E3D07513FD08F12B9BC /* ScorerTests.swift */,
+			);
+			path = CyberbitsDefconTests;
+			sourceTree = "<group>";
+		};
+		D051446D3EC7DF9CAE4142FA /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				554433608127759E23797870 /* ArticleStore.swift */,
+				FF64E89E1AB6F4156AAE169B /* DefconStore.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		D78A070C0B495A11EF3B3D4A /* Pipeline */ = {
+			isa = PBXGroup;
+			children = (
+				49D8921878DB8E3A41E7868B /* Deduplicator.swift */,
+				F22F7422824CDE4208EAB337 /* FeedParser.swift */,
+				0F2EC68FB750A6713729D796 /* FetchCoordinator.swift */,
+				80E773D9C9AE524E313F2C95 /* NotificationScheduler.swift */,
+				EC7EDF19F655196720043AAE /* Scorer.swift */,
+			);
+			path = Pipeline;
+			sourceTree = "<group>";
+		};
+		DF1A92A44481BEF6F7FD9A1B /* App */ = {
+			isa = PBXGroup;
+			children = (
+				1C3320EB1F83B2451CBD6B55 /* AppDelegate.swift */,
+				94D8892E7163E564C5837964 /* CyberbitsDefconApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		EF84FB218299B6E0DAD1AD75 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				6767A18D15C4C1DC144B00BF /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		F67F750397FE417163103EF5 /* CyberbitsDefcon */ = {
+			isa = PBXGroup;
+			children = (
+				9CA79E6490E7F017BA26A205 /* Info.plist */,
+				DF1A92A44481BEF6F7FD9A1B /* App */,
+				D051446D3EC7DF9CAE4142FA /* Data */,
+				471FD6BFEBC93B5C8B1F5917 /* Models */,
+				D78A070C0B495A11EF3B3D4A /* Pipeline */,
+				40F130D67987B2EC68609D33 /* Shared */,
+				692DB0BD0BB2518CEDA6AC04 /* Views */,
+			);
+			path = CyberbitsDefcon;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		9EC4A9AC637BFF1B5D2939F9 /* CyberbitsDefcon */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 16F75CD333D1A0E7C7CF4C1A /* Build configuration list for PBXNativeTarget "CyberbitsDefcon" */;
+			buildPhases = (
+				C425E809423646A4A7FF19F0 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CyberbitsDefcon;
+			packageProductDependencies = (
+			);
+			productName = CyberbitsDefcon;
+			productReference = 0FB6CB0DC1C50493D90C8104 /* CyberbitsDefcon.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FE9BBAC874E0907895CFF8F3 /* CyberbitsDefconTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4BD71C54F90FD09C04F04D3A /* Build configuration list for PBXNativeTarget "CyberbitsDefconTests" */;
+			buildPhases = (
+				667119BFDD132AD320174F3E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09E842BD4896DBB936EBA854 /* PBXTargetDependency */,
+			);
+			name = CyberbitsDefconTests;
+			packageProductDependencies = (
+			);
+			productName = CyberbitsDefconTests;
+			productReference = 75C8C8554A429D6BF6307556 /* CyberbitsDefconTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6C6D74A0174BC45370DB4419 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					9EC4A9AC637BFF1B5D2939F9 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+					FE9BBAC874E0907895CFF8F3 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 2E0FAA91EDE4BE5728D363CC /* Build configuration list for PBXProject "CyberbitsDefcon" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 85B4AF3D5AE11EFD3CF1EF09;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7042482C5FC7DFCEC1BA2B1F /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				9EC4A9AC637BFF1B5D2939F9 /* CyberbitsDefcon */,
+				FE9BBAC874E0907895CFF8F3 /* CyberbitsDefconTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		667119BFDD132AD320174F3E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B1F2394D715011A7A5311407 /* DataStoreTests.swift in Sources */,
+				5B59892540B1E8DA6B0DCACA /* DeduplicatorTests.swift in Sources */,
+				3B1A60B0B6EC927A0C42C19E /* FeedParserTests.swift in Sources */,
+				9A0A37576A0CA19B7F64A4AE /* ScorerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C425E809423646A4A7FF19F0 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4553FA031D7C640E2085D3D8 /* AppDelegate.swift in Sources */,
+				F381F8D5090C04E9180CC30E /* AppSettings.swift in Sources */,
+				B905346831E229DAD2F7ECE9 /* Article.swift in Sources */,
+				EECC865F2740EBE667334800 /* ArticleRow.swift in Sources */,
+				2839E0C0F03EB2CBA3044B17 /* ArticleStore.swift in Sources */,
+				373E6BF63B27B73FD4494F5B /* ArticlesView.swift in Sources */,
+				66CBC4522C51B337843AC1FC /* CyberbitsDefconApp.swift in Sources */,
+				9967415043DCF644256B299A /* DashboardView.swift in Sources */,
+				27DF2B6E7FF05B061B85668A /* Deduplicator.swift in Sources */,
+				59544305AD9F8F68FEF69836 /* DefconColors.swift in Sources */,
+				14089C19FF5F1701D57EDB9D /* DefconGauge.swift in Sources */,
+				BA91F31CA764BB2D777666DA /* DefconHistory.swift in Sources */,
+				04472A67DDF9FC7192555FCE /* DefconStatus.swift in Sources */,
+				ECBAEA63E2846F1EDC22D354 /* DefconStore.swift in Sources */,
+				E3965BEB5D494D62C28AFD86 /* FactorScoresWidget.swift in Sources */,
+				A95C3CA01A7BF7941DE61E14 /* FeedParser.swift in Sources */,
+				9FB6377265D523D6027F5AF8 /* FeedSource.swift in Sources */,
+				B646FE0E75B1E36D0473683D /* FetchCoordinator.swift in Sources */,
+				9AE2783176556E95DF1B9EC9 /* FilterBar.swift in Sources */,
+				1F891A4CE78492BE2566D9DD /* NotificationScheduler.swift in Sources */,
+				E3797B4E3E0EE94B5530DC74 /* RawArticle.swift in Sources */,
+				767B84E13A26FB82687A5DD6 /* RecentCVEs.swift in Sources */,
+				3781E6F246A03F0C0F53E323 /* RootView.swift in Sources */,
+				8FD7E9B2340491B71A993A1F /* Scorer.swift in Sources */,
+				E0736C7F3B8235525ECF71CC /* SettingsView.swift in Sources */,
+				5FF9C2E4B21A2205DF4DF510 /* SeverityBreakdown.swift in Sources */,
+				F9787FA8944EF4A9C36D5315 /* SourceDistribution.swift in Sources */,
+				DA0CCF60BEC7CE2F0427E128 /* TopThreatsWidget.swift in Sources */,
+				16B958774D8AAE0C32BEB8F4 /* TrendingKeywords.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		09E842BD4896DBB936EBA854 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9EC4A9AC637BFF1B5D2939F9 /* CyberbitsDefcon */;
+			targetProxy = C6D94480AFBB7F5E76A7570A /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		130D1BD5006F1303EFA42BFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.cyberbits.CyberbitsDefconTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CyberbitsDefcon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CyberbitsDefcon";
+			};
+			name = Debug;
+		};
+		4DFDD5F17422EEDDC2359BE2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		870B8A9D16D6CEFCDE78D57A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.cyberbits.CyberbitsDefconTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CyberbitsDefcon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CyberbitsDefcon";
+			};
+			name = Release;
+		};
+		E603A2A137A392A181F53A41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CyberbitsDefcon/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.cyberbits.defcon;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		E61EE4526677C73FC9611E86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGNING_ALLOWED = NO;
+				CODE_SIGNING_REQUIRED = NO;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		E9A9BB4258141892F8C260E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = CyberbitsDefcon/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.cyberbits.defcon;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		16F75CD333D1A0E7C7CF4C1A /* Build configuration list for PBXNativeTarget "CyberbitsDefcon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E9A9BB4258141892F8C260E2 /* Debug */,
+				E603A2A137A392A181F53A41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		2E0FAA91EDE4BE5728D363CC /* Build configuration list for PBXProject "CyberbitsDefcon" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E61EE4526677C73FC9611E86 /* Debug */,
+				4DFDD5F17422EEDDC2359BE2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		4BD71C54F90FD09C04F04D3A /* Build configuration list for PBXNativeTarget "CyberbitsDefconTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				130D1BD5006F1303EFA42BFD /* Debug */,
+				870B8A9D16D6CEFCDE78D57A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6C6D74A0174BC45370DB4419 /* Project object */;
+}

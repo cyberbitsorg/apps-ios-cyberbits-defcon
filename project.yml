@@ -1,0 +1,79 @@
+name: CyberbitsDefcon
+options:
+  bundleIdPrefix: com.cyberbits
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGNING_ALLOWED: NO
+
+targets:
+  CyberbitsDefcon:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: CyberbitsDefcon
+    info:
+      path: CyberbitsDefcon/Info.plist
+      properties:
+        CFBundleDisplayName: Cyberbits DEFCON
+        UILaunchScreen:
+          UIColorName: ""
+        UIBackgroundModes:
+          - fetch
+          - processing
+        BGTaskSchedulerPermittedIdentifiers:
+          - com.cyberbits.defcon.refresh
+        NSUserNotificationUsageDescription: "Cyberbits DEFCON alerts you when the threat level rises."
+        UIRequiredDeviceCapabilities:
+          - arm64
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.cyberbits.defcon
+        TARGETED_DEVICE_FAMILY: "1,2"
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_PREVIEWS: YES
+
+  CyberbitsDefconTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: CyberbitsDefconTests
+    dependencies:
+      - target: CyberbitsDefcon
+    settings:
+      base:
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/CyberbitsDefcon.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CyberbitsDefcon"
+
+schemes:
+  CyberbitsDefcon:
+    build:
+      targets:
+        CyberbitsDefcon: all
+        CyberbitsDefconTests: [test]
+    test:
+      targets:
+        - CyberbitsDefconTests
+    run:
+      config: Debug
+    archive:
+      config: Release
