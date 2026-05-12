@@ -17,7 +17,7 @@ struct CyberbitsDefconApp: App {
     let appState = AppState()
 
     init() {
-        let schema = Schema([Article.self, DefconHistory.self])
+        let schema = Schema([Article.self, DefconHistory.self, DedupRecord.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         let c: ModelContainer
         do {

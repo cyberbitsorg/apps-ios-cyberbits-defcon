@@ -9,7 +9,8 @@ struct SeverityBreakdown: View {
         let level: Int
         let count: Int
         var id: Int { level }
-        var label: String { DefconStatus.labels[level] ?? "" }
+        // Short axis labels — full terms ("Cocked Pistol" etc.) don't fit.
+        var label: String { "DEF \(level)" }
         var color: Color { .defcon(level) }
     }
 

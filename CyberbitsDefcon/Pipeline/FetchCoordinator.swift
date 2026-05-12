@@ -12,9 +12,10 @@ actor FetchCoordinator {
         let previousStatus = try? DefconStore.currentStatus(context: modelContext)
         let previousLevel = previousStatus?.level ?? 5  // 5 = lowest threat baseline
 
-        // 1. Load dedup state from persisted store
-        let fingerprints = ArticleStore.existingFingerprints(context: modelContext)
-        let recentTitles = ArticleStore.recentTitles(context: modelContext)
+        // 1. Load dedup state from the dedup log (kept at 300, independent of
+        //    the 100-article display cap). Mirrors docker's redis recent_titles.
+        let fingerprints = DedupStore.fingerprints(context: modelContext)
+        let recentTitles = DedupStore.recentTitles(context: modelContext)
 
         // 2. Fetch all feeds concurrently
         var allRaw: [RawArticle] = []
@@ -47,11 +48,14 @@ actor FetchCoordinator {
         for raw in unique {
             let result = Scorer.computeArticleScore(title: raw.title, summary: raw.summary)
             ArticleStore.upsert(raw, score: result.score, trigger: result.trigger, context: modelContext)
+            DedupStore.record(fingerprint: Deduplicator.fingerprint(raw.title),
+                              title: raw.title, context: modelContext)
         }
         try? modelContext.save()
 
-        // 5. Trim
+        // 5. Trim (articles to 100/15, dedup log to 300)
         ArticleStore.trim(context: modelContext)
+        DedupStore.trim(context: modelContext)
         try? modelContext.save()
 
         // 6. Compute global DEFCON (v2): weighted-max over 24h window + volume bonus

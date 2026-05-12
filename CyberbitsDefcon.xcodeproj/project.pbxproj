@@ -21,6 +21,7 @@
 		5B59892540B1E8DA6B0DCACA /* DeduplicatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7901B71EEA9C225E1A9B78A4 /* DeduplicatorTests.swift */; };
 		5FF9C2E4B21A2205DF4DF510 /* SeverityBreakdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = A67E663353A9B90DF4A66E68 /* SeverityBreakdown.swift */; };
 		610FCA215850BFF553225731 /* Vocabulary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DE6FAC5F535D1E564F8BDE9 /* Vocabulary.swift */; };
+		662CB8C081AA93DD2BCB9AE1 /* DedupStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFC0271D91DAF63021271251 /* DedupStore.swift */; };
 		66CBC4522C51B337843AC1FC /* CyberbitsDefconApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94D8892E7163E564C5837964 /* CyberbitsDefconApp.swift */; };
 		767B84E13A26FB82687A5DD6 /* RecentCVEs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1CD7BCF5C83BFD0FEFEFF9 /* RecentCVEs.swift */; };
 		8FD7E9B2340491B71A993A1F /* Scorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7EDF19F655196720043AAE /* Scorer.swift */; };
@@ -38,6 +39,7 @@
 		E3797B4E3E0EE94B5530DC74 /* RawArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346D3D46C7834B6FE198030B /* RawArticle.swift */; };
 		E3965BEB5D494D62C28AFD86 /* FactorScoresWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1D81CEE7B0D0EC1AE71F0AF /* FactorScoresWidget.swift */; };
 		E710BE413ECB1DC51416729A /* Triggers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200B18054049C34B08FF9413 /* Triggers.swift */; };
+		EB275902290144E3D31A9415 /* DedupRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D641C0D7944708831162BA23 /* DedupRecord.swift */; };
 		ECBAEA63E2846F1EDC22D354 /* DefconStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF64E89E1AB6F4156AAE169B /* DefconStore.swift */; };
 		EECC865F2740EBE667334800 /* ArticleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C660A11670C090E823832ABB /* ArticleRow.swift */; };
 		F381F8D5090C04E9180CC30E /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */; };
@@ -89,8 +91,10 @@
 		C369D41E7B41B02004A8BF65 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		C39F381C97107D22C9237201 /* DefconStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconStatus.swift; sourceTree = "<group>"; };
 		C660A11670C090E823832ABB /* ArticleRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticleRow.swift; sourceTree = "<group>"; };
+		D641C0D7944708831162BA23 /* DedupRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DedupRecord.swift; sourceTree = "<group>"; };
 		DE5C688E593985D49571B888 /* TopThreatsWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopThreatsWidget.swift; sourceTree = "<group>"; };
 		EC7EDF19F655196720043AAE /* Scorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scorer.swift; sourceTree = "<group>"; };
+		EFC0271D91DAF63021271251 /* DedupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DedupStore.swift; sourceTree = "<group>"; };
 		F22F7422824CDE4208EAB337 /* FeedParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParser.swift; sourceTree = "<group>"; };
 		FF64E89E1AB6F4156AAE169B /* DefconStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -124,6 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				0088F69682BB0AAB9EC19CC9 /* Article.swift */,
+				D641C0D7944708831162BA23 /* DedupRecord.swift */,
 				18B13C5679F02B1CFDC96EA2 /* DefconHistory.swift */,
 				C39F381C97107D22C9237201 /* DefconStatus.swift */,
 				4F34F4E34874E364306B9595 /* FeedSource.swift */,
@@ -186,6 +191,7 @@
 			isa = PBXGroup;
 			children = (
 				554433608127759E23797870 /* ArticleStore.swift */,
+				EFC0271D91DAF63021271251 /* DedupStore.swift */,
 				FF64E89E1AB6F4156AAE169B /* DefconStore.swift */,
 			);
 			path = Data;
@@ -337,6 +343,8 @@
 				373E6BF63B27B73FD4494F5B /* ArticlesView.swift in Sources */,
 				66CBC4522C51B337843AC1FC /* CyberbitsDefconApp.swift in Sources */,
 				9967415043DCF644256B299A /* DashboardView.swift in Sources */,
+				EB275902290144E3D31A9415 /* DedupRecord.swift in Sources */,
+				662CB8C081AA93DD2BCB9AE1 /* DedupStore.swift in Sources */,
 				27DF2B6E7FF05B061B85668A /* Deduplicator.swift in Sources */,
 				59544305AD9F8F68FEF69836 /* DefconColors.swift in Sources */,
 				14089C19FF5F1701D57EDB9D /* DefconGauge.swift in Sources */,

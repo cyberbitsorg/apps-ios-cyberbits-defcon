@@ -4,14 +4,15 @@ import UIKit
 #endif
 
 extension Color {
-    /// Official DEFCON convention: 1 = highest threat (red), 5 = lowest (green).
+    /// Official DEFCON convention (matches apps-docker-cyberbits-defcon constants.ts):
+    /// 1 = Cocked Pistol (white) … 5 = Fade Out (blue).
     static func defcon(_ level: Int) -> Color {
         switch level {
-        case 1: return Color(hex: "dc2626") // CRITICAL — red
-        case 2: return Color(hex: "ea580c") // HIGH — orange
-        case 3: return Color(hex: "f59e0b") // ELEVATED — amber
-        case 4: return Color(hex: "3b82f6") // GUARDED — blue
-        case 5: return Color(hex: "22c55e") // LOW — green
+        case 1: return Color(hex: "ffffff") // Cocked Pistol — white
+        case 2: return Color(hex: "dc2626") // Fast Pace — red
+        case 3: return Color(hex: "eab308") // Round House — yellow
+        case 4: return Color(hex: "22c55e") // Double Take — green
+        case 5: return Color(hex: "3b82f6") // Fade Out — blue
         default: return .gray
         }
     }

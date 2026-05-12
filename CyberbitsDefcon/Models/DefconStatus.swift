@@ -24,14 +24,27 @@ struct DefconStatus {
     let trend: DefconTrend
     let computedAt: Date
 
-    /// Official DEFCON convention: 1 = highest threat.
+    /// Official DEFCON convention: 1 = highest threat ("Cocked Pistol").
+    /// Matches DEFCON_LEVELS in apps-docker-cyberbits-defcon/services/frontend/src/lib/constants.ts.
     static let labels: [Int: String] = [
-        1: "CRITICAL",
-        2: "HIGH",
-        3: "ELEVATED",
-        4: "GUARDED",
-        5: "LOW",
+        1: "COCKED PISTOL",
+        2: "FAST PACE",
+        3: "ROUND HOUSE",
+        4: "DOUBLE TAKE",
+        5: "FADE OUT",
     ]
+
+    static func shortLabel(_ level: Int) -> String {
+        // Short tags used by filter chips / pickers
+        switch level {
+        case 1: return "DEFCON 1"
+        case 2: return "DEFCON 2"
+        case 3: return "DEFCON 3"
+        case 4: return "DEFCON 4"
+        case 5: return "DEFCON 5"
+        default: return "—"
+        }
+    }
 
     init(breakdown: DefconBreakdown, trend: DefconTrend, computedAt: Date) {
         self.breakdown = breakdown

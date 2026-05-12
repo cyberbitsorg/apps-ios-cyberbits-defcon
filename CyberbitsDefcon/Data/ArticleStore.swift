@@ -39,7 +39,7 @@ enum ArticleStore {
         return ((try? context.fetch(descriptor)) ?? []).map(\.title)
     }
 
-    static func trim(totalLimit: Int = 300, perSourceLimit: Int = 60, context: ModelContext) {
+    static func trim(totalLimit: Int = 100, perSourceLimit: Int = 15, context: ModelContext) {
         // Per-source trim
         for source in FeedSource.allCases {
             let raw = source.rawValue

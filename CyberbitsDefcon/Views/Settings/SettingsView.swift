@@ -83,9 +83,9 @@ struct SettingsView: View {
                     if defconNotificationsEnabled {
                         // Inverted scale: threshold is the highest level *number* that still notifies.
                         Picker("Minimum Level", selection: $notificationThreshold) {
-                            Text("ELEVATED or worse").tag(3)
-                            Text("HIGH or worse").tag(2)
-                            Text("CRITICAL only").tag(1)
+                            Text("DEFCON 3 — Round House or worse").tag(3)
+                            Text("DEFCON 2 — Fast Pace or worse").tag(2)
+                            Text("DEFCON 1 — Cocked Pistol only").tag(1)
                         }
                     }
                     Toggle("Alert on New Articles", isOn: $newArticleNotificationsEnabled)
