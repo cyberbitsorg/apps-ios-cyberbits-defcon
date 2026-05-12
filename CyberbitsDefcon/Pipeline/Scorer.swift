@@ -7,7 +7,8 @@ enum Scorer {
         return computeGlobalScore(texts: [text], newCount: 1).total
     }
 
-    static func computeGlobalScore(texts: [String], newCount: Int) -> DefconFactors {
+    static func computeGlobalScore(texts rawTexts: [String], newCount: Int) -> DefconFactors {
+        let texts = rawTexts.map { $0.lowercased() }
         let n = texts.count
         guard n > 0 else { return DefconFactors(volumeScore: 0, cveScore: 0, impactScore: 0, keywordScore: 0) }
 
