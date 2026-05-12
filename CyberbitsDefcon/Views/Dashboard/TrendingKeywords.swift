@@ -43,6 +43,7 @@ struct TrendingKeywords: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
     }

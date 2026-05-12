@@ -28,14 +28,10 @@ struct TopThreatsWidget: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func scoreLevel(_ score: Double) -> Int {
-        switch score {
-        case 80...: return 5; case 60..<80: return 4; case 40..<60: return 3
-        case 20..<40: return 2; default: return 1
-        }
-    }
+    private func scoreLevel(_ score: Double) -> Int { Scorer.levelFromScore(score) }
 }

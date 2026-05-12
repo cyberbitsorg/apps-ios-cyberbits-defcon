@@ -1,7 +1,24 @@
 import Foundation
 
+enum AppearanceMode: Int, CaseIterable, Identifiable {
+    case system = 0, light = 1, dark = 2
+    var id: Int { rawValue }
+    var label: String {
+        switch self {
+        case .system: return "System"
+        case .light: return "Light"
+        case .dark: return "Dark"
+        }
+    }
+}
+
 enum AppSettings {
     private static let defaults = UserDefaults.standard
+
+    static var appearance: AppearanceMode {
+        get { AppearanceMode(rawValue: defaults.integer(forKey: "appearance")) ?? .system }
+        set { defaults.set(newValue.rawValue, forKey: "appearance") }
+    }
 
     static var refreshIntervalMinutes: Int {
         get { let v = defaults.integer(forKey: "refreshIntervalMinutes"); return v == 0 ? 60 : v }

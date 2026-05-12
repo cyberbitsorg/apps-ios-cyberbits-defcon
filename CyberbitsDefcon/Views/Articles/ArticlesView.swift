@@ -17,7 +17,9 @@ struct ArticlesView: View {
         allArticles.filter { article in
             if let source = selectedSource, article.sourceRaw != source.rawValue { return false }
             if unreadOnly && article.isRead { return false }
-            if let lvl = minLevel, scoreLevel(article.defconScore) < lvl { return false }
+            // Inverted scale: minLevel is the LOWEST level *number* allowed
+            // (i.e. minLevel=2 means "HIGH or worse" → level ≤ 2).
+            if let lvl = minLevel, Scorer.levelFromScore(article.defconScore) > lvl { return false }
             if !searchText.isEmpty {
                 let q = searchText.lowercased()
                 if !article.title.lowercased().contains(q) &&
@@ -77,10 +79,4 @@ struct ArticlesView: View {
         appState.isRefreshing = false
     }
 
-    private func scoreLevel(_ score: Double) -> Int {
-        switch score {
-        case 80...: return 5; case 60..<80: return 4; case 40..<60: return 3
-        case 20..<40: return 2; default: return 1
-        }
-    }
 }

@@ -1,72 +1,247 @@
 import Foundation
 
+/// Result of scoring a single article (v2).
+struct ArticleScoreResult {
+    let score: Double           // final per-article score (0–100)
+    let trigger: TriggerType?   // matched Track A trigger (nil if Track B alone)
+    let trackA: Double          // Track A score (0 if no trigger)
+    let trackB: Double          // Track B final (capped at 80)
+    let cve: Double             // Track B sub-score
+    let impact: Double          // Track B sub-score
+    let keywords: Double        // Track B sub-score
+}
+
+/// Result of computing the global DEFCON score (v2).
+struct GlobalScoreResult {
+    let score: Double           // 0–100
+    let weightedMax: Double     // best article * (1 - age/24h)
+    let volumeBonus: Double     // 0–10
+    let trigger: TriggerType?
+    let triggerArticleTitle: String?
+}
+
 enum Scorer {
 
-    static func computeArticleScore(title: String, summary: String) -> Double {
+    // MARK: - Per-article (v2)
+
+    static func computeArticleScore(title: String, summary: String) -> ArticleScoreResult {
         let text = "\(title) \(summary)".lowercased()
-        return computeGlobalScore(texts: [text], newCount: 1).total
+        if text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            return ArticleScoreResult(score: 0, trigger: nil, trackA: 0, trackB: 0,
+                                      cve: 0, impact: 0, keywords: 0)
+        }
+
+        let (cve, impact, keywords) = trackBUnclamped(text)
+
+        // Title keyword bonus — boosts headline emphasis on top of body.
+        let titleRaw = keywordRaw(title.lowercased())
+        let titleBoost = min(Double(titleRaw) / 8.0, 1.0) * 20.0
+
+        let trackBUnc = cve + impact + keywords + titleBoost
+        let trackB = min(trackBUnc, 80.0)
+
+        var trigger = Triggers.detect(text)
+        if trigger != nil, Triggers.isNewsletterTitle(title) {
+            trigger = nil
+        }
+
+        if let trigger {
+            let base = trigger.trigger.baseScore
+            let bonus = min(trackBUnc, 10.0)
+            let trackA = min(base + bonus, 100.0)
+            let final = max(trackA, trackB)
+            return ArticleScoreResult(
+                score: round(final * 100) / 100,
+                trigger: trigger.trigger,
+                trackA: round(trackA * 100) / 100,
+                trackB: round(trackB * 100) / 100,
+                cve: round(cve * 100) / 100,
+                impact: round(impact * 100) / 100,
+                keywords: round(keywords * 100) / 100
+            )
+        }
+
+        return ArticleScoreResult(
+            score: round(trackB * 100) / 100,
+            trigger: nil,
+            trackA: 0,
+            trackB: round(trackB * 100) / 100,
+            cve: round(cve * 100) / 100,
+            impact: round(impact * 100) / 100,
+            keywords: round(keywords * 100) / 100
+        )
     }
 
-    static func computeGlobalScore(texts rawTexts: [String], newCount: Int) -> DefconFactors {
-        let texts = rawTexts.map { $0.lowercased() }
-        let n = texts.count
-        guard n > 0 else { return DefconFactors(volumeScore: 0, cveScore: 0, impactScore: 0, keywordScore: 0) }
+    // MARK: - Global (v2)
 
-        // Dimension 1 — Volume
-        let volumeScore = min(Double(newCount) / 12.0, 1.0) * 25
+    /// Each tuple represents an article in the 24h scoring window.
+    struct WindowArticle {
+        let title: String
+        let score: Double
+        let trigger: TriggerType?
+        let publishedAt: Date
+    }
 
-        // Dimension 2 — CVE Severity
-        var cvssScores: [Double] = []
-        let cvssRe = try? NSRegularExpression(pattern: #"cvss[\s:v]*(\d+\.?\d*)"#, options: .caseInsensitive)
-        let severityFallback: [(String, Double)] = [("critical", 9.0), ("high", 7.0), ("medium", 5.0), ("low", 2.5)]
-        for text in texts {
-            let range = NSRange(text.startIndex..., in: text)
-            if let matches = cvssRe?.matches(in: text, range: range), !matches.isEmpty {
-                for match in matches {
-                    if let r = Range(match.range(at: 1), in: text), let v = Double(text[r]), v >= 0, v <= 10 {
-                        cvssScores.append(v)
-                    }
-                }
-            } else {
-                for (word, score) in severityFallback {
-                    if text.contains(word) { cvssScores.append(score); break }
+    private static let windowHours: Double = 24
+    private static let volumeBonusCap: Double = 10
+
+    static func computeGlobalScore(window: [WindowArticle], newCount: Int, baseline: Double?) -> GlobalScoreResult {
+        var weightedMax: Double = 0
+        var winner: WindowArticle?
+        let now = Date()
+        for art in window {
+            let ageHours = now.timeIntervalSince(art.publishedAt) / 3600
+            let weight = max(0, 1.0 - ageHours / windowHours)
+            let contribution = art.score * weight
+            if contribution > weightedMax {
+                weightedMax = contribution
+                winner = art
+            }
+        }
+
+        let volumeBonus: Double
+        if let baseline, baseline > 0 {
+            let ratio = Double(newCount) / baseline
+            volumeBonus = max(0, min((ratio - 1) * 10, volumeBonusCap))
+        } else {
+            volumeBonus = 0
+        }
+
+        let total = min(weightedMax + volumeBonus, 100)
+        return GlobalScoreResult(
+            score: round(total * 100) / 100,
+            weightedMax: round(weightedMax * 100) / 100,
+            volumeBonus: round(volumeBonus * 100) / 100,
+            trigger: winner?.trigger,
+            triggerArticleTitle: winner?.title
+        )
+    }
+
+    /// Convert a 0–100 score to an official DEFCON level (1=highest threat, 5=lowest).
+    static func levelFromScore(_ score: Double) -> Int {
+        if score >= 80 { return 1 }
+        if score >= 60 { return 2 }
+        if score >= 40 { return 3 }
+        if score >= 20 { return 4 }
+        return 5
+    }
+
+    // MARK: - Track B sub-scores
+
+    private static func trackBUnclamped(_ text: String) -> (cve: Double, impact: Double, keywords: Double) {
+        let cveRaw = extractCVSS(text)
+        let cveScore = (cveRaw / 10.0) * 30.0
+        let impactScore = extractImpactScore(text)
+        let keywordScore = extractKeywordScoreNormalized(text)
+        return (cveScore, impactScore, keywordScore)
+    }
+
+    private static let cveIdPattern = #"\bCVE[-–— ]?\d{4}[-–— ]?\d{3,}\b"#
+    private static let severityWords: [(String, Double)] =
+        [("critical", 9.0), ("high", 7.0), ("medium", 5.0), ("low", 2.5)]
+
+    private static func extractCVSS(_ text: String) -> Double {
+        // 1) Explicit CVSS scores within 50-char window
+        var scores: [Double] = []
+        let cvssWindow = NSRegularExpression.cached(#"cvss[^\n]{0,50}"#)
+        for m in cvssWindow.allMatches(in: text) {
+            let window = text.substring(m.range)
+            let numRe = NSRegularExpression.cached(#"(?<![.\w])(\d+\.?\d*)(?!\w)"#)
+            for nm in numRe.allMatches(in: window) {
+                if let val = Double(window.substring(nm.range)), val >= 0, val <= 10 {
+                    scores.append(val)
                 }
             }
         }
-        let cveScore = cvssScores.isEmpty ? 0 :
-            (cvssScores.reduce(0, +) / Double(cvssScores.count) / 10.0) * 25
+        if let best = scores.max() { return best }
 
-        // Dimension 3 — Impact
-        var impactRaw = 0.0
-        for text in texts {
-            if text.range(of: #"\d+\s*million"#, options: .regularExpression) != nil { impactRaw += 8 }
-            if text.range(of: "power grid|hospital|water treatment|government|military|critical infrastructure",
-                          options: .regularExpression) != nil { impactRaw += 7 }
-            if text.contains("actively exploit") { impactRaw += 6 }
-            if let m = text.range(of: #"(\d+)\s*countries"#, options: .regularExpression) {
-                let numStr = String(text[m]).components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
-                if let num = Int(numStr), num > 5 { impactRaw += 6 }
+        // 2) CVE id + severity word co-occurrence
+        if NSRegularExpression.cached(cveIdPattern).firstMatch(in: text) != nil {
+            let matched = severityWords
+                .filter { NSRegularExpression.cached(#"\b\#($0.0)\b"#).firstMatch(in: text) != nil }
+                .map { $0.1 }
+            if let best = matched.max() { return best }
+        }
+
+        // 3) Prose-described vulnerabilities with strong scope/qualifier
+        let scope = Triggers.hasScopeAmplifier(text)
+        if NSRegularExpression.cached(#"\bzero[- ]?day\b"#).firstMatch(in: text) != nil, scope { return 8.0 }
+        if NSRegularExpression.cached(#"\b(remote code execution|RCE)\b"#).firstMatch(in: text) != nil {
+            let unauth = NSRegularExpression.cached(#"\bunauthenticated\b"#).firstMatch(in: text) != nil
+            if unauth || scope { return 8.0 }
+        }
+        if NSRegularExpression.cached(#"\b(root|kernel)\b"#).firstMatch(in: text) != nil, scope { return 7.5 }
+
+        return 0
+    }
+
+    private static let impactCap: Double = 12
+
+    private static func extractImpactScore(_ text: String) -> Double {
+        var raw = 0.0
+        if NSRegularExpression.cached(#"power grid|hospital|water treatment|government|military|critical infrastructure"#)
+            .firstMatch(in: text) != nil { raw += 5 }
+        if NSRegularExpression.cached(#"(?:\d[\d,.]*\s*)?millions?\b"#).firstMatch(in: text) != nil { raw += 4 }
+        if let m = NSRegularExpression.cached(#"(\d+)\s*countries"#).firstMatch(in: text) {
+            let numRange = m.range(at: 1)
+            if numRange.location != NSNotFound, let n = Int(text.substring(numRange)), n > 5 { raw += 4 }
+        }
+        if NSRegularExpression.cached(#"data breach|breached|breaches|\bbreach\b|leaked|exposed|exposing"#)
+            .firstMatch(in: text) != nil { raw += 3 }
+        if NSRegularExpression.cached(#"(?:\d{6,}|\d{3,}[kK])\s*(users|records|devices|systems)"#)
+            .firstMatch(in: text) != nil { raw += 3 }
+        if NSRegularExpression.cached(#"hundreds of\s+(colleges?|universities|schools|organizations|companies|agencies)"#)
+            .firstMatch(in: text) != nil { raw += 3 }
+        if NSRegularExpression.cached(#"\b(all|most)\s+(major|popular|common)\s+(linux|windows|macos|android|ios|mobile\s+)?(distributions?|versions?|systems?|platforms?|devices?|distros?)\b"#)
+            .firstMatch(in: text) != nil { raw += 3 }
+        if NSRegularExpression.cached(#"\bbillions?\s+of\s+(devices|users)\b"#).firstMatch(in: text) != nil { raw += 5 }
+        if NSRegularExpression.cached(#"\bevery\s+(version|release)\b"#).firstMatch(in: text) != nil { raw += 4 }
+        if NSRegularExpression.cached(#"\bany\s+(linux|windows|macos|android|ios)\s+(system|device|user)\b"#)
+            .firstMatch(in: text) != nil { raw += 4 }
+        return min(raw / impactCap, 1.0) * 25.0
+    }
+
+    private static func keywordRaw(_ text: String) -> Int {
+        var raw = 0
+        let tiers: [([String], Int)] = [(Vocabulary.tier1, 8), (Vocabulary.tier2, 4), (Vocabulary.tier3, 1)]
+        for (tier, pts) in tiers {
+            for kw in tier {
+                if Vocabulary.wordBoundaryRequired.contains(kw) {
+                    let pattern = #"\b\#(NSRegularExpression.escapedPattern(for: kw))\b"#
+                    if NSRegularExpression.cached(pattern).firstMatch(in: text) != nil { raw += pts }
+                } else {
+                    if text.contains(kw) { raw += pts }
+                }
             }
-            if text.range(of: "data breach|leaked|exposed", options: .regularExpression) != nil { impactRaw += 4 }
-            if text.range(of: #"\d{6,}\s*(users|records|devices|systems)"#, options: .regularExpression) != nil { impactRaw += 5 }
         }
-        let impactScore = min(impactRaw / (Double(n) * 3), 1.0) * 25
+        return raw
+    }
 
-        // Dimension 4 — Keywords
-        let tier1 = ["zero-day", "zero day", "nation-state", "state-sponsored", "ransomware attack", "critical infrastructure"]
-        let tier2 = ["ransomware", "backdoor", "supply chain", "apt", "wiper", "botnet", "ddos", "rce", "remote code execution"]
-        let tier3 = ["vulnerability", "exploit", "patch", "breach", "malware", "phishing", "cve", "zero-day", "trojan", "spyware"]
-        var keywordRaw = 0.0
-        for text in texts {
-            for kw in tier1 where text.contains(kw) { keywordRaw += 5 }
-            for kw in tier2 where text.contains(kw) { keywordRaw += 3 }
-            for kw in tier3 where text.contains(kw) { keywordRaw += 1 }
-        }
-        let keywordScore = min(keywordRaw / (Double(n) * 8), 1.0) * 25
+    private static let densityCap: Double = 2.0
 
-        return DefconFactors(volumeScore: round(volumeScore * 100) / 100,
-                             cveScore: round(cveScore * 100) / 100,
-                             impactScore: round(impactScore * 100) / 100,
-                             keywordScore: round(keywordScore * 100) / 100)
+    private static func extractKeywordScoreNormalized(_ text: String) -> Double {
+        let raw = keywordRaw(text)
+        if raw == 0 { return 0 }
+        let tokenCount = max(1, text.split(separator: " ").count)
+        let denom = max(1.0, log2(Double(tokenCount) + 1))
+        let density = Double(raw) / denom
+        return min(density / densityCap, 1.0) * 25.0
+    }
+}
+
+// MARK: - Regex cache helper
+
+private extension NSRegularExpression {
+    private static var staticCache: [String: NSRegularExpression] = [:]
+    private static let staticLock = NSLock()
+
+    static func cached(_ pattern: String) -> NSRegularExpression {
+        staticLock.lock(); defer { staticLock.unlock() }
+        if let r = staticCache[pattern] { return r }
+        let r = (try? NSRegularExpression(pattern: pattern,
+                                          options: [.caseInsensitive, .dotMatchesLineSeparators]))
+            ?? NSRegularExpression()
+        staticCache[pattern] = r
+        return r
     }
 }

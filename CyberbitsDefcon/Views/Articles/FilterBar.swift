@@ -19,10 +19,11 @@ struct FilterBar: View {
                     }
                 }
                 Divider().frame(height: 20)
-                FilterChip(label: "HIGH+", isSelected: minLevel == 4,
-                           accentColor: Color(hex: "ea580c")) { minLevel = minLevel == 4 ? nil : 4 }
-                FilterChip(label: "CRITICAL", isSelected: minLevel == 5,
-                           accentColor: Color(hex: "dc2626")) { minLevel = minLevel == 5 ? nil : 5 }
+                // Inverted scale: 2 = HIGH or worse (≤ 2), 1 = CRITICAL only
+                FilterChip(label: "HIGH+", isSelected: minLevel == 2,
+                           accentColor: Color(hex: "ea580c")) { minLevel = minLevel == 2 ? nil : 2 }
+                FilterChip(label: "CRITICAL", isSelected: minLevel == 1,
+                           accentColor: Color(hex: "dc2626")) { minLevel = minLevel == 1 ? nil : 1 }
                 Divider().frame(height: 20)
                 FilterChip(label: "Unread", isSelected: unreadOnly,
                            accentColor: Color(hex: "22c55e")) { unreadOnly.toggle() }

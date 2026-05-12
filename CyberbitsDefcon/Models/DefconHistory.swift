@@ -6,20 +6,25 @@ final class DefconHistory {
     var score: Double
     var level: Int
     var computedAt: Date
-    var volumeScore: Double
-    var cveScore: Double
-    var impactScore: Double
-    var keywordScore: Double
+    var weightedMax: Double
+    var volumeBonus: Double
+    var triggerRaw: String?
+    var triggerArticleTitle: String?
 
     init(score: Double, level: Int, computedAt: Date,
-         volumeScore: Double, cveScore: Double,
-         impactScore: Double, keywordScore: Double) {
+         weightedMax: Double, volumeBonus: Double,
+         trigger: TriggerType? = nil, triggerArticleTitle: String? = nil) {
         self.score = score
         self.level = level
         self.computedAt = computedAt
-        self.volumeScore = volumeScore
-        self.cveScore = cveScore
-        self.impactScore = impactScore
-        self.keywordScore = keywordScore
+        self.weightedMax = weightedMax
+        self.volumeBonus = volumeBonus
+        self.triggerRaw = trigger?.rawValue
+        self.triggerArticleTitle = triggerArticleTitle
+    }
+
+    var trigger: TriggerType? {
+        guard let triggerRaw else { return nil }
+        return TriggerType(rawValue: triggerRaw)
     }
 }

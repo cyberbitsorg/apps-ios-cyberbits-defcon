@@ -14,10 +14,11 @@ final class Article {
     var isRead: Bool
     var readAt: Date?
     var fingerprint: String
+    var triggerRaw: String?
 
     init(guid: String, title: String, summary: String, url: URL,
          source: FeedSource, publishedAt: Date, defconScore: Double,
-         categories: [String], fingerprint: String) {
+         categories: [String], fingerprint: String, trigger: TriggerType? = nil) {
         self.guid = guid
         self.title = title
         self.summary = summary
@@ -29,8 +30,13 @@ final class Article {
         self.isRead = false
         self.readAt = nil
         self.fingerprint = fingerprint
+        self.triggerRaw = trigger?.rawValue
     }
 
     var url: URL { URL(string: urlString) ?? URL(string: "https://example.com")! }
     var source: FeedSource { FeedSource(rawValue: sourceRaw) ?? .hackread }
+    var trigger: TriggerType? {
+        guard let triggerRaw else { return nil }
+        return TriggerType(rawValue: triggerRaw)
+    }
 }

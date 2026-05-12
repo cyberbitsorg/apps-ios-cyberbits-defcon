@@ -10,6 +10,7 @@ struct SettingsView: View {
     @AppStorage("defconNotificationsEnabled") private var defconNotificationsEnabled: Bool = true
     @AppStorage("notificationThreshold") private var notificationThreshold: Int = 3
     @AppStorage("newArticleNotificationsEnabled") private var newArticleNotificationsEnabled: Bool = true
+    @AppStorage("appearance") private var appearanceRaw: Int = AppearanceMode.system.rawValue
 
     @Query(sort: \Article.publishedAt, order: .reverse) private var articles: [Article]
 
@@ -69,13 +70,22 @@ struct SettingsView: View {
                     }
                 }
 
+                Section("Appearance") {
+                    Picker("Theme", selection: $appearanceRaw) {
+                        ForEach(AppearanceMode.allCases) { mode in
+                            Text(mode.label).tag(mode.rawValue)
+                        }
+                    }
+                }
+
                 Section("Notifications") {
                     Toggle("Alert on DEFCON Level Rise", isOn: $defconNotificationsEnabled)
                     if defconNotificationsEnabled {
+                        // Inverted scale: threshold is the highest level *number* that still notifies.
                         Picker("Minimum Level", selection: $notificationThreshold) {
-                            Text("ELEVATED (3+)").tag(3)
-                            Text("HIGH (4+)").tag(4)
-                            Text("CRITICAL only").tag(5)
+                            Text("ELEVATED or worse").tag(3)
+                            Text("HIGH or worse").tag(2)
+                            Text("CRITICAL only").tag(1)
                         }
                     }
                     Toggle("Alert on New Articles", isOn: $newArticleNotificationsEnabled)

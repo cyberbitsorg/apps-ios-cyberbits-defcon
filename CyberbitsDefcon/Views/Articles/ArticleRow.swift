@@ -4,12 +4,7 @@ struct ArticleRow: View {
     let article: Article
     let onToggleRead: () -> Void
 
-    private func scoreLevel(_ score: Double) -> Int {
-        switch score {
-        case 80...: return 5; case 60..<80: return 4; case 40..<60: return 3
-        case 20..<40: return 2; default: return 1
-        }
-    }
+    private func scoreLevel(_ score: Double) -> Int { Scorer.levelFromScore(score) }
 
     var body: some View {
         HStack(spacing: 0) {

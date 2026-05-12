@@ -6,9 +6,10 @@ struct DefconGauge: View {
     let status: DefconStatus?
     @Query(sort: \DefconHistory.computedAt, order: .forward) private var history: [DefconHistory]
 
-    private var level: Int { status?.level ?? 1 }
+    private var level: Int { status?.level ?? 5 }
     private var color: Color { Color.defcon(level) }
-    private var progress: Double { Double(level) / 5.0 }
+    /// Higher threat (lower level number) fills more of the ring.
+    private var progress: Double { Double(6 - level) / 5.0 }
 
     var body: some View {
         VStack(spacing: 12) {
@@ -80,8 +81,10 @@ struct DefconGauge: View {
 }
 
 #Preview {
-    let factors = DefconFactors(volumeScore: 20, cveScore: 18, impactScore: 12, keywordScore: 10)
-    let status = DefconStatus(factors: factors, trend: .rising, computedAt: Date())
+    let breakdown = DefconBreakdown(weightedMax: 72, volumeBonus: 4,
+                                    trigger: .activeExploitation,
+                                    triggerArticleTitle: "Critical RCE exploited in the wild")
+    let status = DefconStatus(breakdown: breakdown, trend: .rising, computedAt: Date())
     return DefconGauge(status: status)
         .padding()
         .background(Color.defconBackground)

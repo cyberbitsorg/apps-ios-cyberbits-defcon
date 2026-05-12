@@ -3,6 +3,15 @@ import SwiftUI
 struct RootView: View {
     let coordinator: FetchCoordinator
     @Environment(AppState.self) private var appState
+    @AppStorage("appearance") private var appearanceRaw: Int = AppearanceMode.system.rawValue
+
+    private var colorScheme: ColorScheme? {
+        switch AppearanceMode(rawValue: appearanceRaw) ?? .system {
+        case .system: return nil
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
 
     var body: some View {
         if UIDevice.current.userInterfaceIdiom == .pad {
@@ -22,6 +31,7 @@ struct RootView: View {
             } detail: {
                 DashboardView(coordinator: coordinator)
             }
+            .preferredColorScheme(colorScheme)
         } else {
             TabView {
                 DashboardView(coordinator: coordinator)
@@ -33,7 +43,8 @@ struct RootView: View {
                 SettingsView(coordinator: coordinator)
                     .tabItem { Label("Settings", systemImage: "gearshape") }
             }
-            .tint(Color.defcon(appState.defconStatus?.level ?? 1))
+            .tint(Color.defcon(appState.defconStatus?.level ?? 5))
+            .preferredColorScheme(colorScheme)
         }
     }
 

@@ -3,11 +3,16 @@ import SwiftData
 
 enum DefconStore {
 
-    static func writeHistory(factors: DefconFactors, context: ModelContext) {
+    static func writeHistory(_ global: GlobalScoreResult, context: ModelContext) {
+        let level = Scorer.levelFromScore(global.score)
         let entry = DefconHistory(
-            score: factors.total, level: factors.level, computedAt: Date(),
-            volumeScore: factors.volumeScore, cveScore: factors.cveScore,
-            impactScore: factors.impactScore, keywordScore: factors.keywordScore
+            score: global.score,
+            level: level,
+            computedAt: Date(),
+            weightedMax: global.weightedMax,
+            volumeBonus: global.volumeBonus,
+            trigger: global.trigger,
+            triggerArticleTitle: global.triggerArticleTitle
         )
         context.insert(entry)
     }
@@ -21,22 +26,24 @@ enum DefconStore {
         guard let latest = entries.first else { return nil }
         let previous = entries.count > 1 ? entries[1] : nil
 
+        // In the inverted scale, a HIGHER level number is a LOWER threat.
+        // So "rising threat" = level number decreasing.
         let trend: DefconTrend
         if let prev = previous {
-            if latest.level > prev.level { trend = .rising }
-            else if latest.level < prev.level { trend = .falling }
+            if latest.level < prev.level { trend = .rising }
+            else if latest.level > prev.level { trend = .falling }
             else { trend = .stable }
         } else {
             trend = .stable
         }
 
-        let factors = DefconFactors(
-            volumeScore: latest.volumeScore,
-            cveScore: latest.cveScore,
-            impactScore: latest.impactScore,
-            keywordScore: latest.keywordScore
+        let breakdown = DefconBreakdown(
+            weightedMax: latest.weightedMax,
+            volumeBonus: latest.volumeBonus,
+            trigger: latest.trigger,
+            triggerArticleTitle: latest.triggerArticleTitle
         )
-        return DefconStatus(factors: factors, trend: trend, computedAt: latest.computedAt)
+        return DefconStatus(breakdown: breakdown, trend: trend, computedAt: latest.computedAt)
     }
 
     static func history(hours: Int = 24, context: ModelContext) throws -> [DefconHistory] {

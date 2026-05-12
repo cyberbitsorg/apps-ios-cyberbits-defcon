@@ -2,42 +2,43 @@ import SwiftUI
 
 enum DefconTrend { case rising, falling, stable }
 
-struct DefconFactors {
-    let volumeScore: Double
-    let cveScore: Double
-    let impactScore: Double
-    let keywordScore: Double
+/// Breakdown of the current global DEFCON score (v2).
+struct DefconBreakdown {
+    let weightedMax: Double         // 0–100
+    let volumeBonus: Double         // 0–10
+    let trigger: TriggerType?
+    let triggerArticleTitle: String?
 
-    var total: Double { min(volumeScore + cveScore + impactScore + keywordScore, 100) }
+    var total: Double { min(weightedMax + volumeBonus, 100) }
 
-    var level: Int {
-        switch total {
-        case 80...: return 5
-        case 60..<80: return 4
-        case 40..<60: return 3
-        case 20..<40: return 2
-        default: return 1
-        }
-    }
+    /// Official DEFCON level (1 = highest threat, 5 = lowest).
+    var level: Int { Scorer.levelFromScore(total) }
 }
 
 struct DefconStatus {
     let score: Double
-    let level: Int
+    let level: Int        // 1 (highest) … 5 (lowest)
     let label: String
     let color: Color
-    let factors: DefconFactors
+    let breakdown: DefconBreakdown
     let trend: DefconTrend
     let computedAt: Date
 
-    static let labels = [1: "LOW", 2: "GUARDED", 3: "ELEVATED", 4: "HIGH", 5: "CRITICAL"]
+    /// Official DEFCON convention: 1 = highest threat.
+    static let labels: [Int: String] = [
+        1: "CRITICAL",
+        2: "HIGH",
+        3: "ELEVATED",
+        4: "GUARDED",
+        5: "LOW",
+    ]
 
-    init(factors: DefconFactors, trend: DefconTrend, computedAt: Date) {
-        self.factors = factors
-        self.score = factors.total
-        self.level = factors.level
-        self.label = DefconStatus.labels[factors.level] ?? "UNKNOWN"
-        self.color = Color.defcon(factors.level)
+    init(breakdown: DefconBreakdown, trend: DefconTrend, computedAt: Date) {
+        self.breakdown = breakdown
+        self.score = breakdown.total
+        self.level = breakdown.level
+        self.label = DefconStatus.labels[breakdown.level] ?? "UNKNOWN"
+        self.color = Color.defcon(breakdown.level)
         self.trend = trend
         self.computedAt = computedAt
     }

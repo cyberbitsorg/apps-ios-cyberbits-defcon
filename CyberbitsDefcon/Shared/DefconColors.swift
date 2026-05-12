@@ -4,13 +4,14 @@ import UIKit
 #endif
 
 extension Color {
+    /// Official DEFCON convention: 1 = highest threat (red), 5 = lowest (green).
     static func defcon(_ level: Int) -> Color {
         switch level {
-        case 1: return Color(hex: "22c55e")
-        case 2: return Color(hex: "3b82f6")
-        case 3: return Color(hex: "f59e0b")
-        case 4: return Color(hex: "ea580c")
-        case 5: return Color(hex: "dc2626")
+        case 1: return Color(hex: "dc2626") // CRITICAL — red
+        case 2: return Color(hex: "ea580c") // HIGH — orange
+        case 3: return Color(hex: "f59e0b") // ELEVATED — amber
+        case 4: return Color(hex: "3b82f6") // GUARDED — blue
+        case 5: return Color(hex: "22c55e") // LOW — green
         default: return .gray
         }
     }

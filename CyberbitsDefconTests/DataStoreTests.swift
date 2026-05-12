@@ -53,12 +53,16 @@ final class DataStoreTests: XCTestCase {
     }
 
     func test_writeHistory_savesEntry() throws {
-        let factors = DefconFactors(volumeScore: 10, cveScore: 15, impactScore: 5, keywordScore: 8)
-        DefconStore.writeHistory(factors: factors, context: context)
+        let global = GlobalScoreResult(
+            score: 72, weightedMax: 70, volumeBonus: 2,
+            trigger: .activeExploitation, triggerArticleTitle: "Critical RCE in the wild"
+        )
+        DefconStore.writeHistory(global, context: context)
         try context.save()
         let fetched = try context.fetch(FetchDescriptor<DefconHistory>())
         XCTAssertEqual(fetched.count, 1)
-        XCTAssertEqual(fetched[0].level, factors.level)
+        XCTAssertEqual(fetched[0].level, Scorer.levelFromScore(72)) // 72 → level 2 (HIGH)
+        XCTAssertEqual(fetched[0].trigger, .activeExploitation)
     }
 
     func test_currentStatus_returnsNilWhenNoHistory() throws {

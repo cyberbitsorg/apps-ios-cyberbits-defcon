@@ -9,8 +9,9 @@ enum NotificationScheduler {
     }
 
     static func notifyDefconLevelChange(newLevel: Int, label: String) {
+        // Inverted scale: notify when level ≤ threshold (lower number = higher threat).
         guard AppSettings.defconNotificationsEnabled,
-              newLevel >= AppSettings.notificationThreshold else { return }
+              newLevel <= AppSettings.notificationThreshold else { return }
 
         let content = UNMutableNotificationContent()
         content.title = "DEFCON \(newLevel) — \(label)"

@@ -9,24 +9,15 @@ struct SeverityBreakdown: View {
         let level: Int
         let count: Int
         var id: Int { level }
-        var label: String { ["", "LOW", "GUARDED", "ELEVATED", "HIGH", "CRITICAL"][level] }
+        var label: String { DefconStatus.labels[level] ?? "" }
         var color: Color { .defcon(level) }
     }
 
     private var counts: [LevelCount] {
+        // Ordered highest threat (1) to lowest (5) for left-to-right severity ranking.
         (1...5).map { level in
-            let count = articles.filter { scoreLevel($0.defconScore) == level }.count
+            let count = articles.filter { Scorer.levelFromScore($0.defconScore) == level }.count
             return LevelCount(level: level, count: count)
-        }
-    }
-
-    private func scoreLevel(_ score: Double) -> Int {
-        switch score {
-        case 80...: return 5
-        case 60..<80: return 4
-        case 40..<60: return 3
-        case 20..<40: return 2
-        default: return 1
         }
     }
 

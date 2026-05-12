@@ -10,12 +10,11 @@ actor FetchCoordinator {
     /// Runs the full pipeline. Returns the newly computed DefconStatus (or nil on total failure).
     func runFetchCycle() async -> DefconStatus? {
         let previousStatus = try? DefconStore.currentStatus(context: modelContext)
-        let previousLevel = previousStatus?.level ?? 0
+        let previousLevel = previousStatus?.level ?? 5  // 5 = lowest threat baseline
 
         // 1. Load dedup state from persisted store
         let fingerprints = ArticleStore.existingFingerprints(context: modelContext)
         let recentTitles = ArticleStore.recentTitles(context: modelContext)
-        let deduplicator = Deduplicator(existingFingerprints: fingerprints, recentTitles: recentTitles)
 
         // 2. Fetch all feeds concurrently
         var allRaw: [RawArticle] = []
@@ -26,14 +25,28 @@ actor FetchCoordinator {
             for await batch in group { allRaw.append(contentsOf: batch) }
         }
 
-        // 3. Deduplicate
-        let unique = allRaw.filter { !deduplicator.isDuplicate($0) }
+        // 3. Deduplicate (against store + within batch)
+        var acceptedFingerprints = Set<String>()
+        var acceptedTitles: [String] = []
+        var unique: [RawArticle] = []
+        for raw in allRaw {
+            let fp = Deduplicator.fingerprint(raw.title)
+            if acceptedFingerprints.contains(fp) { continue }
+            let dedup = Deduplicator(
+                existingFingerprints: fingerprints.union(acceptedFingerprints),
+                recentTitles: recentTitles + acceptedTitles
+            )
+            if dedup.isDuplicate(raw) { continue }
+            acceptedFingerprints.insert(fp)
+            acceptedTitles.append(raw.title)
+            unique.append(raw)
+        }
         let newCount = unique.count
 
-        // 4. Score and store
+        // 4. Score (v2 per-article: Track A trigger + Track B sub-scores) and store
         for raw in unique {
-            let score = Scorer.computeArticleScore(title: raw.title, summary: raw.summary)
-            ArticleStore.upsert(raw, score: score, context: modelContext)
+            let result = Scorer.computeArticleScore(title: raw.title, summary: raw.summary)
+            ArticleStore.upsert(raw, score: result.score, trigger: result.trigger, context: modelContext)
         }
         try? modelContext.save()
 
@@ -41,21 +54,30 @@ actor FetchCoordinator {
         ArticleStore.trim(context: modelContext)
         try? modelContext.save()
 
-        // 6. Compute global DEFCON
-        let recent = ArticleStore.fetchRecent(limit: 20, context: modelContext)
-        let texts = recent.map { "\($0.title) \($0.summary)".lowercased() }
-        let factors = Scorer.computeGlobalScore(texts: texts, newCount: newCount)
+        // 6. Compute global DEFCON (v2): weighted-max over 24h window + volume bonus
+        let windowArticles = ArticleStore.articlesInWindow(hours: 24, context: modelContext)
+        let window: [Scorer.WindowArticle] = windowArticles.map { article in
+            Scorer.WindowArticle(
+                title: article.title,
+                score: article.defconScore,
+                trigger: article.trigger,
+                publishedAt: article.publishedAt
+            )
+        }
+        // Without a volume baseline established yet, pass nil — bonus becomes 0.
+        let global = Scorer.computeGlobalScore(window: window, newCount: newCount, baseline: nil)
 
         // 7. Write history
-        DefconStore.writeHistory(factors: factors, context: modelContext)
+        DefconStore.writeHistory(global, context: modelContext)
         try? modelContext.save()
 
         // 8. Update last refresh timestamp
         AppSettings.lastRefreshedAt = Date()
 
         // 9. Notify
+        //   In the inverted DEFCON scale, a LOWER level number means a HIGHER threat.
         let newStatus = try? DefconStore.currentStatus(context: modelContext)
-        if let status = newStatus, status.level > previousLevel {
+        if let status = newStatus, status.level < previousLevel {
             await MainActor.run {
                 NotificationScheduler.notifyDefconLevelChange(newLevel: status.level, label: status.label)
             }
