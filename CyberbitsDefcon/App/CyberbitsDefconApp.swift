@@ -19,7 +19,20 @@ struct CyberbitsDefconApp: App {
     init() {
         let schema = Schema([Article.self, DefconHistory.self])
         let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-        let c = try! ModelContainer(for: schema, configurations: config)
+        let c: ModelContainer
+        do {
+            c = try ModelContainer(for: schema, configurations: config)
+        } catch {
+            // Schema-incompatible store from a previous version — wipe and recreate.
+            // SwiftData stores live in Application Support; remove and retry.
+            if let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+                let candidates = ["default.store", "default.store-shm", "default.store-wal"]
+                for name in candidates {
+                    try? FileManager.default.removeItem(at: appSupport.appendingPathComponent(name))
+                }
+            }
+            c = try! ModelContainer(for: schema, configurations: config)
+        }
         container = c
         coordinator = FetchCoordinator(modelContainer: c)
 
