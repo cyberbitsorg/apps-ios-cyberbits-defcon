@@ -39,15 +39,47 @@ struct RecentCVEs: View {
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             } else {
-                ForEach(cves.prefix(8), id: \.id) { cve in
-                    Link(cve.id, destination: cve.url)
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(Color(hex: "3b82f6"))
-                }
+                CVEChipFlow(cves: Array(cves.prefix(8)))
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
         .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+private struct CVEChip: View {
+    let id: String
+    let url: URL
+
+    var body: some View {
+        Link(destination: url) {
+            Text(id)
+                .font(.caption.monospacedDigit().weight(.semibold))
+                .foregroundStyle(Color(hex: "3b82f6"))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    Color(hex: "3b82f6").opacity(0.12),
+                    in: RoundedRectangle(cornerRadius: 6)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 6)
+                        .stroke(Color(hex: "3b82f6").opacity(0.35), lineWidth: 0.5)
+                )
+        }
+        .buttonStyle(.plain)
+    }
+}
+
+private struct CVEChipFlow: View {
+    let cves: [(id: String, url: URL)]
+
+    var body: some View {
+        FlowLayout(spacing: 6) {
+            ForEach(cves, id: \.id) { cve in
+                CVEChip(id: cve.id, url: cve.url)
+            }
+        }
     }
 }

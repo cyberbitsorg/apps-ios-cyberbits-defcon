@@ -49,14 +49,14 @@ final class DataStoreTests: XCTestCase {
             ArticleStore.upsert(raw, score: 50, context: context)
         }
         try context.save()
-        ArticleStore.trim(context: context)  // defaults: total=100, perSource=15
+        ArticleStore.trim(context: context)  // defaults: total=100, perSource=20
         try context.save()
         let remaining = try context.fetch(FetchDescriptor<Article>())
-        // Per-source cap dominates (5 sources × 15 = 75 ≤ 100 global)
+        // 5 sources × 20 = 100 — both caps bind at the same point.
         XCTAssertLessThanOrEqual(remaining.count, 100)
         for source in sources {
             let perSource = remaining.filter { $0.sourceRaw == source.rawValue }.count
-            XCTAssertLessThanOrEqual(perSource, 15, "\(source) exceeded per-source cap")
+            XCTAssertLessThanOrEqual(perSource, 20, "\(source) exceeded per-source cap")
         }
     }
 

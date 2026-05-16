@@ -46,12 +46,15 @@ struct DefconStatus {
         }
     }
 
-    init(breakdown: DefconBreakdown, trend: DefconTrend, computedAt: Date) {
+    /// `displayedLevel` defaults to `breakdown.level` (raw) but can be overridden
+    /// with the sticky-state-machine level so the UI reflects the displayed value.
+    init(breakdown: DefconBreakdown, trend: DefconTrend, computedAt: Date, displayedLevel: Int? = nil) {
+        let level = displayedLevel ?? breakdown.level
         self.breakdown = breakdown
         self.score = breakdown.total
-        self.level = breakdown.level
-        self.label = DefconStatus.labels[breakdown.level] ?? "UNKNOWN"
-        self.color = Color.defcon(breakdown.level)
+        self.level = level
+        self.label = DefconStatus.labels[level] ?? "UNKNOWN"
+        self.color = Color.defcon(level)
         self.trend = trend
         self.computedAt = computedAt
     }

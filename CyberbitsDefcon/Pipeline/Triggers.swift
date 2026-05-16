@@ -8,15 +8,15 @@ enum TriggerType: String, CaseIterable {
     case aptCampaign         = "apt_campaign"
     case malwareCampaign     = "malware_campaign"
 
-    /// Track A base score for this trigger (0–100).
+    /// Track A base score for this trigger (0–100). Matches docker `TRIGGER_BASE`.
     var baseScore: Double {
         switch self {
-        case .activeExploitation: return 80
-        case .kevAddition:        return 75
-        case .criticalScopeVuln:  return 70
-        case .confirmedBreach:    return 70
-        case .aptCampaign:        return 65
-        case .malwareCampaign:    return 60
+        case .activeExploitation: return 70
+        case .kevAddition:        return 70
+        case .criticalScopeVuln:  return 65
+        case .confirmedBreach:    return 65
+        case .aptCampaign:        return 60
+        case .malwareCampaign:    return 55
         }
     }
 
@@ -39,15 +39,30 @@ struct TriggerMatch {
 
 enum Triggers {
 
+    /// Explicit precedence order — matches docker `PRECEDENCE`. Highest-severity first.
+    private static let precedence: [TriggerType] = [
+        .activeExploitation, .kevAddition, .criticalScopeVuln,
+        .confirmedBreach, .aptCampaign, .malwareCampaign,
+    ]
+
     /// Detect the highest-precedence trigger in `text`. Returns nil if none match.
-    /// `text` must be pre-lowercased.
+    /// `text` must be pre-lowercased. Contest/bug-bounty contexts (Pwn2Own, CTF,
+    /// HackerOne) exclude active_exploitation, kev_addition, critical_scope_vuln.
     static func detect(_ text: String) -> TriggerMatch? {
-        for trigger in TriggerType.allCases {
+        let contest = isContestContext(text)
+        for trigger in precedence {
+            if contest, trigger == .activeExploitation || trigger == .kevAddition || trigger == .criticalScopeVuln {
+                continue
+            }
             if let matched = match(trigger, in: text) {
                 return TriggerMatch(trigger: trigger, matchedText: matched)
             }
         }
         return nil
+    }
+
+    static func isContestContext(_ text: String) -> Bool {
+        regex(contestPattern).firstMatch(in: text) != nil
     }
 
     static func hasScopeAmplifier(_ text: String) -> Bool {
@@ -87,7 +102,10 @@ enum Triggers {
         #"\bexploits?\s+(cve|known|critical|vuln|flaw|bug|zero[- ]?day)"#,
         #"\bexploited\s+as\s+a?\s*(zero|0)[- ]?day\b"#,
         #"\bweaponized\b"#,
-        #"\b(actively\s+)?exploiting\b"#,
+        #"\bactively\s+exploiting\b"#,
+        // Bare "exploiting" must reference a vuln-like indicator within ~80 chars to
+        // avoid false positives like "exploiting human trust" / "exploiting confusion".
+        #"\bexploiting\b[^.\n]{0,80}(cve|flaw|bug|vuln|zero[- ]?day|0[- ]?day|rce|remote code execution|patch|advisory|exploit)"#,
         #"\bcashing in on\s+(?:fresh|new|unpatched|critical)?\s*(?:\w+\s+){0,3}(flaw|bug|vuln|vulnerability|cve)"#,
         #"\bwave of attacks?\b"#,
         #"\bin active use\s+by\b"#,
@@ -146,6 +164,11 @@ enum Triggers {
     }
 
     private static let campaignVerbPattern = #"\b(targeting|deploys?|distributes?|spreads?|drops?|delivers?|campaign|infects?|infecting)\b"#
+
+    private static let contestPattern =
+        #"\bpwn2own\b|\bcapture[- ]the[- ]flag\b|\bctf\b|\bhack(?:athon|fest|the box)\b|"# +
+        #"\bbug bounty\b|\bdef ?con (?:ctf|village|finals?)\b|\bhackone\b|\bhackerone\b|"# +
+        #"\bzero day initiative\b|\bzdi\b"#
 
     // MARK: - Detection
 

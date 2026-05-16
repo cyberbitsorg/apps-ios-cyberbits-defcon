@@ -14,7 +14,9 @@ struct SourceDistribution: View {
     private var counts: [SourceCount] {
         FeedSource.allCases.map { source in
             SourceCount(source: source, count: articles.filter { $0.sourceRaw == source.rawValue }.count)
-        }.filter { $0.count > 0 }
+        }
+        .filter { $0.count > 0 }
+        .sorted { $0.source.displayName.localizedCaseInsensitiveCompare($1.source.displayName) == .orderedAscending }
     }
 
     var body: some View {

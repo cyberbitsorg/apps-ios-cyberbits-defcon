@@ -3,8 +3,13 @@ import SwiftData
 
 enum DefconStore {
 
-    static func writeHistory(_ global: GlobalScoreResult, context: ModelContext) {
-        let level = Scorer.levelFromScore(global.score)
+    /// `displayedLevel` is the sticky-adjusted level (not the raw `levelFromScore`).
+    /// The score field stays raw so trends remain comparable; the level field is
+    /// what the UI shows.
+    static func writeHistory(_ global: GlobalScoreResult,
+                             displayedLevel: Int? = nil,
+                             context: ModelContext) {
+        let level = displayedLevel ?? Scorer.levelFromScore(global.score)
         let entry = DefconHistory(
             score: global.score,
             level: level,
@@ -43,7 +48,10 @@ enum DefconStore {
             trigger: latest.trigger,
             triggerArticleTitle: latest.triggerArticleTitle
         )
-        return DefconStatus(breakdown: breakdown, trend: trend, computedAt: latest.computedAt)
+        return DefconStatus(breakdown: breakdown,
+                            trend: trend,
+                            computedAt: latest.computedAt,
+                            displayedLevel: latest.level)
     }
 
     static func history(hours: Int = 24, context: ModelContext) throws -> [DefconHistory] {

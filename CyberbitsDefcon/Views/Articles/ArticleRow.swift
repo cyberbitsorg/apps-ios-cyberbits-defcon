@@ -35,8 +35,16 @@ struct ArticleRow: View {
                         .font(.caption.monospacedDigit().weight(.bold))
                         .foregroundStyle(Color.defcon(scoreLevel(article.defconScore)))
                         .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(Color.defcon(scoreLevel(article.defconScore)).opacity(0.15),
+                        .background(Color.defcon(scoreLevel(article.defconScore))
+                            .opacity(isDefcon1 ? (pulse ? 0.45 : 0.15) : 0.15),
                                     in: RoundedRectangle(cornerRadius: 5))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 5)
+                                .stroke(Color(hex: "dc2626").opacity(isDefcon1 ? (pulse ? 0.9 : 0.3) : 0),
+                                        lineWidth: isDefcon1 ? 1 : 0)
+                        )
+                        .shadow(color: isDefcon1 ? Color(hex: "dc2626").opacity(pulse ? 0.7 : 0.2) : .clear,
+                                radius: isDefcon1 ? (pulse ? 8 : 3) : 0)
                 }
                 HStack {
                     Text(article.source.displayName)

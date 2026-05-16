@@ -2,6 +2,7 @@ import Foundation
 import SwiftData
 
 enum DedupStore {
+    /// Matches docker `RECENT_TITLES_MAX = 300`.
     static let maxRecords = 300
 
     /// All persisted fingerprints (most recent first).

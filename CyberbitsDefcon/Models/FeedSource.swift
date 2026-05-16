@@ -1,46 +1,47 @@
 import SwiftUI
 
 enum FeedSource: String, CaseIterable, Identifiable {
-    case hackread = "hackread"
-    case infosecurityMagazine = "infosecurity_magazine"
-    case securityAffairs = "security_affairs"
-    case techRadar = "techradar"
-    case theRegister = "the_register"
+    case bleepingComputer = "bleeping_computer"
+    case hackerNews       = "hacker_news"
+    case hackread         = "hackread"
+    case securityAffairs  = "security_affairs"
+    case theRegister      = "the_register"
 
     var id: String { rawValue }
 
     var displayName: String {
         switch self {
-        case .hackread: return "HackRead"
-        case .infosecurityMagazine: return "Infosecurity Magazine"
-        case .securityAffairs: return "Security Affairs"
-        case .techRadar: return "TechRadar"
-        case .theRegister: return "The Register"
+        case .bleepingComputer: return "Bleeping Computer"
+        case .hackerNews:       return "Hacker News"
+        case .hackread:         return "HackRead"
+        case .securityAffairs:  return "Security Affairs"
+        case .theRegister:      return "The Register"
         }
     }
 
     var feedURL: URL {
         switch self {
+        case .bleepingComputer:
+            return URL(string: "https://www.bleepingcomputer.com/feed/")!
+        case .hackerNews:
+            return URL(string: "https://thehackernews.com/feeds/posts/default")!
         case .hackread:
             return URL(string: "https://hackread.com/feed/")!
-        case .infosecurityMagazine:
-            return URL(string: "https://www.infosecurity-magazine.com/rss/news/")!
         case .securityAffairs:
             return URL(string: "https://securityaffairs.com/wp-json/wp/v2/posts?per_page=100")!
-        case .techRadar:
-            return URL(string: "https://www.techradar.com/feeds/tag/security")!
         case .theRegister:
             return URL(string: "https://www.theregister.com/security/headlines.atom")!
         }
     }
 
+    /// Source colors — matches docker `services/frontend/src/lib/constants.ts`.
     var accentColor: Color {
         switch self {
-        case .hackread: return Color(hex: "3b82f6")
-        case .infosecurityMagazine: return Color(hex: "8b5cf6")
-        case .securityAffairs: return Color(hex: "ec4899")
-        case .techRadar: return Color(hex: "14b8a6")
-        case .theRegister: return Color(hex: "f59e0b")
+        case .bleepingComputer: return Color(hex: "f97316")   // orange
+        case .hackerNews:       return Color(hex: "8b5cf6")   // violet
+        case .hackread:         return Color(hex: "ec4899")   // pink
+        case .securityAffairs:  return Color(hex: "e11d48")   // rose
+        case .theRegister:      return Color(hex: "06b6d4")   // cyan
         }
     }
 

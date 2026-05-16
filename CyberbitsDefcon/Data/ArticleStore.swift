@@ -33,13 +33,19 @@ enum ArticleStore {
         return Set(all.map(\.fingerprint))
     }
 
+    static func existingGuids(context: ModelContext) -> Set<String> {
+        let descriptor = FetchDescriptor<Article>()
+        let all = (try? context.fetch(descriptor)) ?? []
+        return Set(all.map(\.guid))
+    }
+
     static func recentTitles(limit: Int = 300, context: ModelContext) -> [String] {
         var descriptor = FetchDescriptor<Article>(sortBy: [SortDescriptor(\.publishedAt, order: .reverse)])
         descriptor.fetchLimit = limit
         return ((try? context.fetch(descriptor)) ?? []).map(\.title)
     }
 
-    static func trim(totalLimit: Int = 100, perSourceLimit: Int = 15, context: ModelContext) {
+    static func trim(totalLimit: Int = 100, perSourceLimit: Int = 20, context: ModelContext) {
         // Single fetch sorted newest-first; partition in-memory to avoid SwiftData
         // predicate-capture quirks and to guarantee a single transactional delete pass.
         let descriptor = FetchDescriptor<Article>(sortBy: [SortDescriptor(\.publishedAt, order: .reverse)])
