@@ -44,7 +44,7 @@ struct SettingsView: View {
                         VStack(alignment: .leading) {
                             Text("Refresh Now")
                             if let last = AppSettings.lastRefreshedAt {
-                                Text(last, style: .relative)
+                                Text(RelativeTime.format(last))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             } else {

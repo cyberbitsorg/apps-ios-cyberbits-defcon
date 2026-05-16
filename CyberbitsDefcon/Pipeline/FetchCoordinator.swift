@@ -58,8 +58,10 @@ actor FetchCoordinator {
         DedupStore.trim(context: modelContext)
         try? modelContext.save()
 
-        // 6. Compute global DEFCON (v2): weighted-max over 24h window + volume bonus
-        let windowArticles = ArticleStore.articlesInWindow(hours: 24, context: modelContext)
+        // 6. Compute global DEFCON (v2): weighted-max over the 20 most recent articles.
+        //    Matches docker's `get_recent_articles(pool, limit=20)` scope so the
+        //    gauge reflects active threats rather than the full backfill.
+        let windowArticles = ArticleStore.fetchRecent(limit: 20, context: modelContext)
         let window: [Scorer.WindowArticle] = windowArticles.map { article in
             Scorer.WindowArticle(
                 title: article.title,

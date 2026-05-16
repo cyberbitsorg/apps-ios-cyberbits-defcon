@@ -3,8 +3,10 @@ import SwiftUI
 struct ArticleRow: View {
     let article: Article
     let onToggleRead: () -> Void
+    @State private var pulse = false
 
     private func scoreLevel(_ score: Double) -> Int { Scorer.levelFromScore(score) }
+    private var isDefcon1: Bool { scoreLevel(article.defconScore) == 1 }
 
     var body: some View {
         HStack(spacing: 0) {
@@ -13,6 +15,14 @@ struct ArticleRow: View {
                 .frame(width: 3)
                 .cornerRadius(2)
                 .padding(.vertical, 4)
+                .shadow(color: isDefcon1 ? Color(hex: "dc2626").opacity(pulse ? 0.9 : 0.35) : .clear,
+                        radius: isDefcon1 ? (pulse ? 10 : 4) : 0)
+                .onAppear {
+                    guard isDefcon1 else { return }
+                    withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
+                        pulse = true
+                    }
+                }
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .top) {
@@ -35,7 +45,7 @@ struct ArticleRow: View {
                     Text("·")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)
-                    Text(article.publishedAt, style: .relative)
+                    Text(RelativeTime.format(article.publishedAt))
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                     Spacer()

@@ -3,7 +3,10 @@ import Charts
 import SwiftData
 
 struct SeverityBreakdown: View {
-    @Query private var articles: [Article]
+    // Only the 20 most-recent articles drive the breakdown — matches the
+    // docker reference where the dashboard reflects active threats.
+    @Query(sort: \Article.publishedAt, order: .reverse) private var articles: [Article]
+    private var recent: [Article] { Array(articles.prefix(20)) }
 
     private struct LevelCount: Identifiable {
         let level: Int
@@ -17,7 +20,7 @@ struct SeverityBreakdown: View {
     private var counts: [LevelCount] {
         // Ordered highest threat (1) to lowest (5) for left-to-right severity ranking.
         (1...5).map { level in
-            let count = articles.filter { Scorer.levelFromScore($0.defconScore) == level }.count
+            let count = recent.filter { Scorer.levelFromScore($0.defconScore) == level }.count
             return LevelCount(level: level, count: count)
         }
     }

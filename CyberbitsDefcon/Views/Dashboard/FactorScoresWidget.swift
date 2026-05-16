@@ -1,26 +1,23 @@
 import SwiftUI
 
 /// v2 breakdown widget: shows the weighted-max contribution (the driver of the
-/// current global score), the volume bonus, and the matched trigger (if any).
+/// current global score) and the matched trigger (if any).
+///
+/// Volume bonus is intentionally hidden: the docker reference computes it from
+/// a rolling redis-backed volume baseline that we don't yet maintain on-device,
+/// so the value is always 0 — a misleading cell. Re-add it once a baseline
+/// store is in place.
 struct FactorScoresWidget: View {
     let breakdown: DefconBreakdown?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 8) {
-                metricCell(
-                    label: "WEIGHTED MAX",
-                    value: breakdown?.weightedMax ?? 0,
-                    cap: 100,
-                    color: Color(hex: "ea580c")
-                )
-                metricCell(
-                    label: "VOLUME BONUS",
-                    value: breakdown?.volumeBonus ?? 0,
-                    cap: 10,
-                    color: Color(hex: "3b82f6")
-                )
-            }
+            metricCell(
+                label: "WEIGHTED MAX",
+                value: breakdown?.weightedMax ?? 0,
+                cap: 100,
+                color: Color(hex: "ea580c")
+            )
 
             if let trigger = breakdown?.trigger {
                 VStack(alignment: .leading, spacing: 4) {
@@ -53,11 +50,12 @@ struct FactorScoresWidget: View {
     }
 
     private func metricCell(label: String, value: Double, cap: Double, color: Color) -> some View {
-        VStack(spacing: 2) {
+        HStack {
             Text(label)
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .tracking(1)
+            Spacer()
             HStack(alignment: .lastTextBaseline, spacing: 2) {
                 Text(String(format: "%.0f", value))
                     .font(.title2.weight(.bold).monospacedDigit())
@@ -67,8 +65,7 @@ struct FactorScoresWidget: View {
                     .foregroundStyle(.tertiary)
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 10)
+        .padding(.horizontal, 12).padding(.vertical, 10)
         .background(color.opacity(0.1), in: RoundedRectangle(cornerRadius: 10))
     }
 }

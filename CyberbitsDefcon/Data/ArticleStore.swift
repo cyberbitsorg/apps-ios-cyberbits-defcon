@@ -40,23 +40,24 @@ enum ArticleStore {
     }
 
     static func trim(totalLimit: Int = 100, perSourceLimit: Int = 15, context: ModelContext) {
-        // Per-source trim
-        for source in FeedSource.allCases {
-            let raw = source.rawValue
-            let descriptor = FetchDescriptor<Article>(
-                predicate: #Predicate { $0.sourceRaw == raw },
-                sortBy: [SortDescriptor(\.publishedAt, order: .reverse)]
-            )
-            let all = (try? context.fetch(descriptor)) ?? []
-            if all.count > perSourceLimit {
-                all.dropFirst(perSourceLimit).forEach { context.delete($0) }
-            }
-        }
-        // Global trim
+        // Single fetch sorted newest-first; partition in-memory to avoid SwiftData
+        // predicate-capture quirks and to guarantee a single transactional delete pass.
         let descriptor = FetchDescriptor<Article>(sortBy: [SortDescriptor(\.publishedAt, order: .reverse)])
         let all = (try? context.fetch(descriptor)) ?? []
-        if all.count > totalLimit {
-            all.dropFirst(totalLimit).forEach { context.delete($0) }
+        guard !all.isEmpty else { return }
+
+        var keptPerSource: [String: Int] = [:]
+        var keptTotal = 0
+        for article in all {
+            let perSource = keptPerSource[article.sourceRaw, default: 0]
+            let withinPerSource = perSource < perSourceLimit
+            let withinGlobal = keptTotal < totalLimit
+            if withinPerSource && withinGlobal {
+                keptPerSource[article.sourceRaw] = perSource + 1
+                keptTotal += 1
+            } else {
+                context.delete(article)
+            }
         }
     }
 
