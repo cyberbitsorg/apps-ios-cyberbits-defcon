@@ -53,11 +53,21 @@ struct CyberbitsDefconApp: App {
         }
     }
 
+    @Environment(\.scenePhase) private var scenePhase
+
     var body: some Scene {
         WindowGroup {
             RootView(coordinator: coordinator)
                 .modelContainer(container)
                 .environment(appState)
+                .onChange(of: scenePhase) { _, phase in
+                    guard phase == .active else { return }
+                    Task {
+                        if let status = await coordinator.tickStickyLevel() {
+                            appState.defconStatus = status
+                        }
+                    }
+                }
                 .task {
                     await NotificationScheduler.requestPermission()
                     if AppSettings.needsRefresh {
@@ -65,8 +75,14 @@ struct CyberbitsDefconApp: App {
                         appState.defconStatus = await coordinator.runFetchCycle()
                         appState.isRefreshing = false
                     } else {
-                        appState.defconStatus = await MainActor.run {
-                            try? DefconStore.currentStatus(context: container.mainContext)
+                        // No fetch needed, but the sticky-level floor may still
+                        // need to decay based on elapsed time alone.
+                        if let ticked = await coordinator.tickStickyLevel() {
+                            appState.defconStatus = ticked
+                        } else {
+                            appState.defconStatus = await MainActor.run {
+                                try? DefconStore.currentStatus(context: container.mainContext)
+                            }
                         }
                     }
                     FetchCoordinator.scheduleBackgroundRefresh()

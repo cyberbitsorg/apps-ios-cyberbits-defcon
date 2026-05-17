@@ -25,7 +25,10 @@ enum StickyLevel {
 
     private static func isMoreSevere(_ a: Int, than b: Int) -> Bool { a < b }
 
-    static func computeDisplayedLevel(rawLevel: Int, state: State, now: Date = Date()) -> Result {
+    static func computeDisplayedLevel(rawLevel: Int,
+                                      state: State,
+                                      evidenceAnchor: Date? = nil,
+                                      now: Date = Date()) -> Result {
         guard let floor = state.floor else {
             return Result(displayedLevel: rawLevel, newFloor: rawLevel, newUntilAt: nil)
         }
@@ -36,11 +39,19 @@ enum StickyLevel {
         }
 
         // raw is LESS severe than floor (numeric raw > floor).
-        let until = state.untilAt
-
-        // No cooldown yet → start one, hold at floor.
-        guard let until else {
-            return Result(displayedLevel: floor, newFloor: floor, newUntilAt: now.addingTimeInterval(cooldown))
+        // The cooldown anchor is the most recent article that still supports the
+        // current floor (passed in as `evidenceAnchor`). Once that article ages
+        // past `cooldown`, the floor starts stepping down. We take the EARLIER
+        // of the stored `untilAt` and the evidence-based estimate so a stale
+        // future-dated `untilAt` (left over from prior buggy logic or a fetch
+        // that happened just before the supporting article rotated out) can't
+        // pin the floor indefinitely.
+        let evidenceUntil = evidenceAnchor?.addingTimeInterval(cooldown) ?? .distantPast
+        let until: Date
+        if let stored = state.untilAt {
+            until = min(stored, evidenceUntil)
+        } else {
+            until = evidenceUntil
         }
 
         // Cooldown still active → hold.
@@ -48,8 +59,12 @@ enum StickyLevel {
             return Result(displayedLevel: floor, newFloor: floor, newUntilAt: until)
         }
 
-        // Cooldown expired → step floor by 1 toward raw (less severe).
-        var newFloor = floor + 1
+        // Cooldown expired → step floor toward raw (less severe). Catch up one
+        // extra step per full cooldown period that has elapsed since `until`, so
+        // the displayed level stays correct even if the app sat idle for hours
+        // without a fetch tick.
+        let extraSteps = max(0, Int(now.timeIntervalSince(until) / cooldown))
+        var newFloor = floor + 1 + extraSteps
         var newUntil: Date? = now.addingTimeInterval(cooldown)
         if isMoreSevere(newFloor, than: rawLevel) || newFloor == rawLevel {
             if newFloor == rawLevel { newUntil = nil }

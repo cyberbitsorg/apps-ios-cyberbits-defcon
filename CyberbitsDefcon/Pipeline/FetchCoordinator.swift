@@ -123,7 +123,12 @@ actor FetchCoordinator {
         // 7. Apply sticky-level state machine, then write history.
         let rawLevel = Scorer.levelFromScore(global.score)
         let stickyState = StickyLevel.read(context: modelContext)
-        let sticky = StickyLevel.computeDisplayedLevel(rawLevel: rawLevel, state: stickyState)
+        let evidenceAnchor = Self.evidenceAnchor(for: stickyState.floor, in: windowArticles)
+        let sticky = StickyLevel.computeDisplayedLevel(
+            rawLevel: rawLevel,
+            state: stickyState,
+            evidenceAnchor: evidenceAnchor
+        )
         StickyLevel.write(sticky, context: modelContext)
         DefconStore.writeHistory(global, displayedLevel: sticky.displayedLevel, context: modelContext)
         try? modelContext.save()
@@ -146,6 +151,50 @@ actor FetchCoordinator {
         }
 
         return newStatus
+    }
+
+    /// Re-applies the sticky-level state machine against the current article
+    /// window without doing any network fetch. Cheap to call on app open so
+    /// the displayed DEFCON level decays in real time even when background
+    /// refreshes were skipped (e.g. simulator, or iOS throttling on device).
+    func tickStickyLevel() async -> DefconStatus? {
+        let windowArticles = ArticleStore.fetchRecent(limit: 20, context: modelContext)
+        guard !windowArticles.isEmpty else { return nil }
+        let window: [Scorer.WindowArticle] = windowArticles.map { article in
+            Scorer.WindowArticle(
+                title: article.title,
+                score: article.defconScore,
+                trigger: article.trigger,
+                publishedAt: article.publishedAt
+            )
+        }
+        let baseline = VolumeStore.baseline(context: modelContext)
+        let global = Scorer.computeGlobalScore(window: window, newCount: 0, baseline: baseline)
+        let rawLevel = Scorer.levelFromScore(global.score)
+        let stickyState = StickyLevel.read(context: modelContext)
+        let evidenceAnchor = Self.evidenceAnchor(for: stickyState.floor, in: windowArticles)
+        let sticky = StickyLevel.computeDisplayedLevel(
+            rawLevel: rawLevel,
+            state: stickyState,
+            evidenceAnchor: evidenceAnchor
+        )
+        print("[DEFCON] tick: raw=\(rawLevel) floor=\(stickyState.floor ?? -1) until=\(stickyState.untilAt?.description ?? "nil") evidence=\(evidenceAnchor?.description ?? "nil") → displayed=\(sticky.displayedLevel) newFloor=\(sticky.newFloor) newUntil=\(sticky.newUntilAt?.description ?? "nil")")
+        StickyLevel.write(sticky, context: modelContext)
+        DefconStore.writeHistory(global, displayedLevel: sticky.displayedLevel, context: modelContext)
+        try? modelContext.save()
+        return try? DefconStore.currentStatus(context: modelContext)
+    }
+
+    /// Most recent published date of an article in the window whose own score
+    /// maps to `floor` or more severe — i.e. an article that, on its own, would
+    /// support holding the floor. `nil` if no such article exists (floor has no
+    /// supporting evidence in the current window).
+    private static func evidenceAnchor(for floor: Int?, in articles: [Article]) -> Date? {
+        guard let floor else { return nil }
+        return articles
+            .filter { Scorer.levelFromScore($0.defconScore) <= floor }
+            .map { $0.publishedAt }
+            .max()
     }
 
     private static func fetch(source: FeedSource) async -> [RawArticle] {
