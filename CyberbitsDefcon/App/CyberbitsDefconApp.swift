@@ -2,10 +2,17 @@ import SwiftUI
 import SwiftData
 import BackgroundTasks
 
+enum AppTab: Hashable { case dashboard, articles, settings }
+
 @Observable
 final class AppState {
     var defconStatus: DefconStatus?
     var isRefreshing = false
+    var selectedTab: AppTab = .dashboard
+    /// Active severity filter for the Articles screen (exact DEFCON level, 1–5).
+    /// Set by tapping a bar in SeverityBreakdown; cleared by FilterBar chips.
+    var articleSeverityFilter: Int? = nil
+    var articleSourceFilter: FeedSource? = nil
 }
 
 @main

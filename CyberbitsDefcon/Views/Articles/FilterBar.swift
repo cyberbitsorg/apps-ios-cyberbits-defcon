@@ -1,9 +1,12 @@
 import SwiftUI
 
+/// Filter chips for the Articles screen.
+/// Mirrors apps-docker-cyberbits-defcon: severity = exact DEFCON level (1–5),
+/// source = exact feed, plus an iOS-only Unread toggle.
 struct FilterBar: View {
     @Binding var selectedSource: FeedSource?
     @Binding var unreadOnly: Bool
-    @Binding var minLevel: Int?
+    @Binding var severityLevel: Int?
     @Binding var searchText: String
 
     var body: some View {
@@ -18,13 +21,20 @@ struct FilterBar: View {
                         selectedSource = selectedSource == source ? nil : source
                     }
                 }
+
                 Divider().frame(height: 20)
-                // Inverted scale: 2 = HIGH or worse (≤ 2), 1 = CRITICAL only
-                FilterChip(label: "HIGH+", isSelected: minLevel == 2,
-                           accentColor: Color(hex: "ea580c")) { minLevel = minLevel == 2 ? nil : 2 }
-                FilterChip(label: "CRITICAL", isSelected: minLevel == 1,
-                           accentColor: Color(hex: "dc2626")) { minLevel = minLevel == 1 ? nil : 1 }
+
+                // Exact DEFCON level — matches docker's SEVERITY_RANGES per-level filter.
+                ForEach((1...5), id: \.self) { level in
+                    FilterChip(label: "DEF \(level)",
+                               isSelected: severityLevel == level,
+                               accentColor: Color.defcon(level)) {
+                        severityLevel = severityLevel == level ? nil : level
+                    }
+                }
+
                 Divider().frame(height: 20)
+
                 FilterChip(label: "Unread", isSelected: unreadOnly,
                            accentColor: Color(hex: "22c55e")) { unreadOnly.toggle() }
             }

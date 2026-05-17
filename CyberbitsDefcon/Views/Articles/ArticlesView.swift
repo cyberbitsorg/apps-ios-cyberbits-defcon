@@ -6,9 +6,7 @@ struct ArticlesView: View {
     @Environment(\.modelContext) private var context
     @Environment(AppState.self) private var appState
 
-    @State private var selectedSource: FeedSource? = nil
     @State private var unreadOnly = false
-    @State private var minLevel: Int? = nil
     @State private var searchText = ""
     @State private var currentPage = 1
 
@@ -18,11 +16,11 @@ struct ArticlesView: View {
 
     private var filtered: [Article] {
         allArticles.filter { article in
-            if let source = selectedSource, article.sourceRaw != source.rawValue { return false }
+            if let source = appState.articleSourceFilter, article.sourceRaw != source.rawValue { return false }
             if unreadOnly && article.isRead { return false }
-            // Inverted scale: minLevel is the LOWEST level *number* allowed
-            // (i.e. minLevel=2 means "DEFCON 2 or worse" → level ≤ 2).
-            if let lvl = minLevel, Scorer.levelFromScore(article.defconScore) > lvl { return false }
+            // Exact DEFCON level match — mirrors docker's SEVERITY_RANGES filter.
+            if let lvl = appState.articleSeverityFilter,
+               Scorer.levelFromScore(article.defconScore) != lvl { return false }
             if !searchText.isEmpty {
                 let q = searchText.lowercased()
                 if !article.title.lowercased().contains(q) &&
@@ -42,15 +40,18 @@ struct ArticlesView: View {
     }
 
     var body: some View {
+        @Bindable var state = appState
         NavigationStack {
             VStack(spacing: 0) {
-                FilterBar(selectedSource: $selectedSource, unreadOnly: $unreadOnly,
-                          minLevel: $minLevel, searchText: $searchText)
+                FilterBar(selectedSource: $state.articleSourceFilter,
+                          unreadOnly: $unreadOnly,
+                          severityLevel: $state.articleSeverityFilter,
+                          searchText: $searchText)
                     .padding(.vertical, 8)
-                    .onChange(of: selectedSource) { _, _ in currentPage = 1 }
-                    .onChange(of: unreadOnly)    { _, _ in currentPage = 1 }
-                    .onChange(of: minLevel)      { _, _ in currentPage = 1 }
-                    .onChange(of: searchText)    { _, _ in currentPage = 1 }
+                    .onChange(of: appState.articleSourceFilter)   { _, _ in currentPage = 1 }
+                    .onChange(of: unreadOnly)                     { _, _ in currentPage = 1 }
+                    .onChange(of: appState.articleSeverityFilter) { _, _ in currentPage = 1 }
+                    .onChange(of: searchText)                     { _, _ in currentPage = 1 }
 
                 List {
                     ForEach(pageArticles) { article in
@@ -75,8 +76,12 @@ struct ArticlesView: View {
             .searchable(text: $searchText, prompt: "Search threats...")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Mark All Read") { markAllRead() }
-                        .font(.caption)
+                    let allRead = !filtered.isEmpty && filtered.allSatisfy(\.isRead)
+                    Button(allRead ? "Mark all unread" : "Mark all read") {
+                        setAllRead(!allRead)
+                    }
+                    .font(.caption)
+                    .disabled(filtered.isEmpty)
                 }
             }
         }
@@ -88,8 +93,12 @@ struct ArticlesView: View {
         try? context.save()
     }
 
-    private func markAllRead() {
-        filtered.forEach { $0.isRead = true; $0.readAt = Date() }
+    private func setAllRead(_ isRead: Bool) {
+        let now = Date()
+        filtered.forEach {
+            $0.isRead = isRead
+            $0.readAt = isRead ? now : nil
+        }
         try? context.save()
     }
 

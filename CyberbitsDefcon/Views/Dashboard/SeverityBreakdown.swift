@@ -1,8 +1,11 @@
 import SwiftUI
-import Charts
 import SwiftData
 
+/// Tappable severity bars — clicking a bar filters the Articles tab to that
+/// DEFCON level, matching docker's SeverityBreakdown widget behaviour.
 struct SeverityBreakdown: View {
+    @Environment(AppState.self) private var appState
+
     // Only the 20 most-recent articles drive the breakdown — matches the
     // docker reference where the dashboard reflects active threats.
     @Query(sort: \Article.publishedAt, order: .reverse) private var articles: [Article]
@@ -12,18 +15,18 @@ struct SeverityBreakdown: View {
         let level: Int
         let count: Int
         var id: Int { level }
-        // Short axis labels — full terms ("Cocked Pistol" etc.) don't fit.
         var label: String { "DEF \(level)" }
         var color: Color { .defcon(level) }
     }
 
     private var counts: [LevelCount] {
-        // Ordered highest threat (1) to lowest (5) for left-to-right severity ranking.
         (1...5).map { level in
             let count = recent.filter { Scorer.levelFromScore($0.defconScore) == level }.count
             return LevelCount(level: level, count: count)
         }
     }
+
+    private var maxCount: Int { max(counts.map(\.count).max() ?? 1, 1) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -31,23 +34,39 @@ struct SeverityBreakdown: View {
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .tracking(1)
-            Chart(counts) { item in
-                BarMark(x: .value("Level", item.label),
-                        y: .value("Count", item.count))
-                    .foregroundStyle(item.color)
-                    .cornerRadius(4)
-            }
-            .chartXAxis {
-                AxisMarks { value in
-                    AxisValueLabel {
-                        if let s = value.as(String.self) {
-                            Text(s).font(.caption2).foregroundStyle(.secondary)
+
+            HStack(alignment: .bottom, spacing: 8) {
+                ForEach(counts) { item in
+                    Button {
+                        appState.articleSeverityFilter =
+                            appState.articleSeverityFilter == item.level ? nil : item.level
+                        appState.selectedTab = .articles
+                    } label: {
+                        VStack(spacing: 4) {
+                            Text("\(item.count)")
+                                .font(.caption2.monospacedDigit())
+                                .foregroundStyle(.secondary)
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(item.color.opacity(
+                                    appState.articleSeverityFilter == item.level ? 1.0 : 0.85
+                                ))
+                                .frame(height: max(8, 56 * (Double(item.count) / Double(maxCount))))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .stroke(item.color,
+                                                lineWidth: appState.articleSeverityFilter == item.level ? 2 : 0)
+                                )
+                            Text(item.label)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
                         }
+                        .frame(maxWidth: .infinity)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                 }
             }
-            .chartYAxis(.hidden)
-            .frame(height: 80)
+            .frame(height: 96, alignment: .bottom)
         }
         .padding()
         .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))

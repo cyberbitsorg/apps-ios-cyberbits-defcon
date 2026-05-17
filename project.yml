@@ -24,7 +24,9 @@ targets:
     info:
       path: CyberbitsDefcon/Info.plist
       properties:
-        CFBundleDisplayName: Cyberbits DEFCON
+        CFBundleDisplayName: Defcon Dash
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         UILaunchScreen:
           UIColorName: ""
         UIBackgroundModes:
@@ -47,9 +49,12 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.cyberbits.defcon
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
         TARGETED_DEVICE_FAMILY: "1,2"
         GENERATE_INFOPLIST_FILE: NO
         ENABLE_PREVIEWS: YES
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
 
   CyberbitsDefconTests:
     type: bundle.unit-test

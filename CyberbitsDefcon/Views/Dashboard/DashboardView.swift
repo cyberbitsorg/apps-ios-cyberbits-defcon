@@ -11,7 +11,7 @@ struct DashboardView: View {
                     DefconGauge(status: appState.defconStatus)
                         .padding(.horizontal)
 
-                    FactorScoresWidget(breakdown: appState.defconStatus?.breakdown)
+                    ThreatIndicators(status: appState.defconStatus)
                         .padding(.horizontal)
 
                     SeverityBreakdown()
