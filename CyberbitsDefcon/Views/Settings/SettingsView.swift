@@ -12,25 +12,6 @@ struct SettingsView: View {
     @AppStorage("newArticleNotificationsEnabled") private var newArticleNotificationsEnabled: Bool = true
     @AppStorage("appearance") private var appearanceRaw: Int = AppearanceMode.system.rawValue
 
-    @Query(sort: \Article.publishedAt, order: .reverse) private var articles: [Article]
-
-    private var cves: [String] {
-        let pattern = try? NSRegularExpression(pattern: #"CVE-\d{4}-\d{4,}"#, options: .caseInsensitive)
-        var seen = Set<String>(); var result: [String] = []
-        for article in articles.prefix(50) {
-            let text = "\(article.title) \(article.summary)"
-            let range = NSRange(text.startIndex..., in: text)
-            (pattern?.matches(in: text, range: range) ?? []).forEach {
-                if let r = Range($0.range, in: text) {
-                    let cve = String(text[r]).uppercased()
-                    if seen.insert(cve).inserted { result.append(cve) }
-                }
-            }
-            if result.count >= 10 { break }
-        }
-        return result
-    }
-
     var body: some View {
         NavigationStack {
             List {
@@ -91,23 +72,15 @@ struct SettingsView: View {
                     Toggle("Alert on New Articles", isOn: $newArticleNotificationsEnabled)
                 }
 
-                if !cves.isEmpty {
-                    Section("Recent CVEs") {
-                        ForEach(cves.prefix(10), id: \.self) { cve in
-                            if let url = URL(string: "https://nvd.nist.gov/vuln/detail/\(cve)") {
-                                Link(cve, destination: url)
-                                    .font(.subheadline.monospacedDigit())
-                                    .foregroundStyle(Color(hex: "3b82f6"))
-                            }
-                        }
-                    }
-                }
-
                 Section("About") {
-                    LabeledContent("App", value: "Cyberbits DEFCON")
+                    LabeledContent("App", value: "Cyberbits Defcon Dashboard")
                     LabeledContent("Version", value: "1.0")
-                    LabeledContent("Backend", value: "Standalone — no account needed")
-                    LabeledContent("Sources", value: "\(FeedSource.allCases.count) security feeds")
+                    if let url = URL(string: "https://cyberbits.systems") {
+                        Link(destination: url) {
+                            LabeledContent("Developer", value: "Cyberbits Systems")
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
             }
             .navigationTitle("Settings")
