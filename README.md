@@ -1,4 +1,4 @@
-# Defcon Dash — iOS
+# Cyberbits Defcon Dash (iOS)
 
 Surfaces the current cyber threat level with supporting indicators and a feed of recent security articles. Android companion lives at [apps-android-cyberbits-defcon](https://github.com/cyberbitsorg/apps-android-cyberbits-defcon).
 
@@ -45,11 +45,11 @@ xcodebuild -project CyberbitsDefcon.xcodeproj \
 
 ## Project layout
 
-- [CyberbitsDefcon/App/](CyberbitsDefcon/App/) — app entry point
-- [CyberbitsDefcon/Views/](CyberbitsDefcon/Views/) — SwiftUI views
-- [CyberbitsDefcon/Models/](CyberbitsDefcon/Models/) — domain models
-- [CyberbitsDefcon/Pipeline/](CyberbitsDefcon/Pipeline/) — fetch / parse / score pipeline
-- [CyberbitsDefcon/Data/](CyberbitsDefcon/Data/) — persistence
-- [CyberbitsDefcon/Shared/](CyberbitsDefcon/Shared/) — shared utilities
-- [CyberbitsDefconTests/](CyberbitsDefconTests/) — unit tests
-- [store/](store/) — App Store assets
+- [CyberbitsDefcon/App/](CyberbitsDefcon/App/) App entry point
+- [CyberbitsDefcon/Views/](CyberbitsDefcon/Views/) SwiftUI views
+- [CyberbitsDefcon/Models/](CyberbitsDefcon/Models/) Domain models
+- [CyberbitsDefcon/Pipeline/](CyberbitsDefcon/Pipeline/) Fetch / parse / score pipeline
+- [CyberbitsDefcon/Data/](CyberbitsDefcon/Data/) Persistence
+- [CyberbitsDefcon/Shared/](CyberbitsDefcon/Shared/) Shared utilities
+- [CyberbitsDefconTests/](CyberbitsDefconTests/) Unit tests
+- [store/](store/) App Store assets
