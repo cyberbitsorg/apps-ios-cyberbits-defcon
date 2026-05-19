@@ -47,9 +47,15 @@ struct ArticleRow: View {
                                 radius: isDefcon1 ? (pulse ? 8 : 3) : 0)
                 }
                 HStack {
-                    Text(article.source.displayName)
-                        .font(.caption2)
-                        .foregroundStyle(article.source.accentColor)
+                    let sourceColor = FeedSource.bleepingComputer.accentColor  // slate-300, uniform across all sources — matches docker fallback
+                    let borderColor = Color.defcon(scoreLevel(article.defconScore))
+                    Text(article.source.abbreviation)
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(0.6)
+                        .foregroundStyle(sourceColor)
+                        .padding(.horizontal, 5).padding(.vertical, 2)
+                        .background(sourceColor.opacity(0.12), in: RoundedRectangle(cornerRadius: 4))
+                        .overlay(RoundedRectangle(cornerRadius: 4).stroke(borderColor.opacity(0.38), lineWidth: 1))
                     Text("·")
                         .font(.caption2)
                         .foregroundStyle(.tertiary)

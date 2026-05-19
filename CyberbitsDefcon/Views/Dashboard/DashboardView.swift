@@ -14,10 +14,10 @@ struct DashboardView: View {
                     ThreatIndicators(status: appState.defconStatus)
                         .padding(.horizontal)
 
-                    SeverityBreakdown()
+                    TopThreatsWidget()
                         .padding(.horizontal)
 
-                    TopThreatsWidget()
+                    SeverityBreakdown()
                         .padding(.horizontal)
 
                     TrendingKeywords()

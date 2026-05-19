@@ -25,7 +25,7 @@ struct TopThreatsWidget: View {
                             .cornerRadius(2)
                         Text(article.title)
                             .font(.caption)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(Color(UIColor.label))
                             .lineLimit(2)
                         Spacer()
                     }

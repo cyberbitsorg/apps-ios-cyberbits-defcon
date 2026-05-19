@@ -34,14 +34,27 @@ enum FeedSource: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Source colors — matches docker `services/frontend/src/lib/constants.ts`.
+    /// Badge abbreviations — matches docker `services/frontend/src/lib/constants.ts` SOURCE_LABELS.
+    var abbreviation: String {
+        switch self {
+        case .bleepingComputer: return "BC"
+        case .hackerNews:       return "HN"
+        case .hackread:         return "HR"
+        case .securityAffairs:  return "SA"
+        case .theRegister:      return "TR"
+        }
+    }
+
+    /// Source colors — muted slate palette, deliberately distinct from the DEFCON warning
+    /// palette (white/red/yellow/green/blue) so source badges don't read as severity.
+    /// Matches docker `services/frontend/src/lib/constants.ts` SOURCE_COLORS.
     var accentColor: Color {
         switch self {
-        case .bleepingComputer: return Color(hex: "f97316")   // orange
-        case .hackerNews:       return Color(hex: "8b5cf6")   // violet
-        case .hackread:         return Color(hex: "ec4899")   // pink
-        case .securityAffairs:  return Color(hex: "e11d48")   // rose
-        case .theRegister:      return Color(hex: "06b6d4")   // cyan
+        case .bleepingComputer: return Color(hex: "cbd5e1")   // slate-300 — lightest
+        case .hackerNews:       return Color(hex: "94a3b8")   // slate-400
+        case .hackread:         return Color(hex: "64748b")   // slate-500
+        case .securityAffairs:  return Color(hex: "475569")   // slate-600
+        case .theRegister:      return Color(hex: "334155")   // slate-700 — darkest
         }
     }
 

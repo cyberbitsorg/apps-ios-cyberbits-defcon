@@ -56,6 +56,8 @@ struct SeverityBreakdown: View {
                                         .stroke(item.color,
                                                 lineWidth: appState.articleSeverityFilter == item.level ? 2 : 0)
                                 )
+                                .shadow(color: item.level == 1 ? Color(hex: "dc2626").opacity(0.5) : .clear,
+                                        radius: item.level == 1 ? 4 : 0)
                             Text(item.label)
                                 .font(.caption2)
                                 .foregroundStyle(.secondary)
