@@ -4,6 +4,7 @@ struct ArticleRow: View {
     let article: Article
     let onToggleRead: () -> Void
     @State private var pulse = false
+    @Environment(\.colorScheme) private var colorScheme
 
     private func scoreLevel(_ score: Double) -> Int { Scorer.levelFromScore(score) }
     private var isDefcon1: Bool { scoreLevel(article.defconScore) == 1 }
@@ -33,7 +34,7 @@ struct ArticleRow: View {
                     Spacer()
                     Text(String(format: "%.0f", article.defconScore))
                         .font(.caption.monospacedDigit().weight(.bold))
-                        .foregroundStyle(Color.defcon(scoreLevel(article.defconScore)))
+                        .foregroundStyle(Color.defconAdaptive(scoreLevel(article.defconScore), in: colorScheme))
                         .padding(.horizontal, 6).padding(.vertical, 2)
                         .background(Color.defcon(scoreLevel(article.defconScore))
                             .opacity(isDefcon1 ? (pulse ? 0.45 : 0.15) : 0.15),

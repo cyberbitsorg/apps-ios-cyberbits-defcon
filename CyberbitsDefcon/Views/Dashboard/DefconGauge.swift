@@ -105,6 +105,7 @@ struct DefconGauge: View {
 private struct GaugeArc: View {
     let level: Int
     let score: Double
+    @Environment(\.colorScheme) private var colorScheme
 
     /// 240° sweep, 8 o'clock → 4 o'clock (clockwise over the top).
     private static let startDeg: Double = 150
@@ -152,12 +153,12 @@ private struct GaugeArc: View {
                 // Needle (triangle pointing from pivot outward)
                 NeedleShape(center: CGPoint(x: cx, y: cy), length: r * 0.55,
                             width: 4, angleDeg: needleAngleDeg)
-                    .fill(.white.opacity(0.9))
+                    .fill((colorScheme == .dark ? Color.white : Color.black).opacity(0.9))
                     .animation(.easeInOut(duration: 0.5), value: score)
 
                 // Pivot
                 Circle()
-                    .fill(.white.opacity(0.9))
+                    .fill((colorScheme == .dark ? Color.white : Color.black).opacity(0.9))
                     .frame(width: 10, height: 10)
                     .overlay(Circle().fill(Color.defcon(level)).frame(width: 6, height: 6))
                     .position(x: cx, y: cy)
@@ -166,11 +167,11 @@ private struct GaugeArc: View {
                 VStack(spacing: 0) {
                     Text("\(level)")
                         .font(.system(size: 30, weight: .bold, design: .monospaced))
-                        .foregroundStyle(Color.defcon(level))
+                        .foregroundStyle(Color.defconAdaptive(level, in: colorScheme))
                     Text(DefconStatus.labels[level] ?? "—")
                         .font(.system(size: 9, weight: .semibold))
                         .tracking(1)
-                        .foregroundStyle(Color.defcon(level).opacity(0.85))
+                        .foregroundStyle(Color.defconAdaptive(level, in: colorScheme).opacity(0.85))
                     Text("\(Int(score.rounded())) / 100")
                         .font(.system(size: 8))
                         .foregroundStyle(.secondary)

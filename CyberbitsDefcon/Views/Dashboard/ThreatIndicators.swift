@@ -7,8 +7,9 @@ struct ThreatIndicators: View {
     let status: DefconStatus?
     @Query private var articles: [Article]
 
+    @Environment(\.colorScheme) private var colorScheme
     private var level: Int { status?.level ?? 5 }
-    private var levelColor: Color { Color.defcon(level) }
+    private var levelColor: Color { Color.defconAdaptive(level, in: colorScheme) }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {

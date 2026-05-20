@@ -17,6 +17,14 @@ extension Color {
         }
     }
 
+    /// Like defcon(_:) but adapts DEFCON 1 (white) to dark gray in light mode so it stays visible.
+    static func defconAdaptive(_ level: Int, in colorScheme: ColorScheme) -> Color {
+        if level == 1 && colorScheme == .light {
+            return Color(hex: "111827")
+        }
+        return defcon(level)
+    }
+
     static let defconBackground = Color(hex: "0f0f1a")
     static let defconSurface = Color(hex: "1a1a2e")
     static let defconBorder = Color(hex: "2a2a3e")

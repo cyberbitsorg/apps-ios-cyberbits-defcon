@@ -5,6 +5,7 @@ struct TopThreatsWidget: View {
     // Pull the 20 most-recent articles, then surface the 5 highest-scoring
     // among those — matches the docker dashboard's "top threats" scope.
     @Query(sort: \Article.publishedAt, order: .reverse) private var articles: [Article]
+    @Environment(\.colorScheme) private var colorScheme
 
     private var top5: [Article] {
         articles.prefix(20).sorted { $0.defconScore > $1.defconScore }.prefix(5).map { $0 }
@@ -20,7 +21,7 @@ struct TopThreatsWidget: View {
                 Link(destination: article.url) {
                     HStack(spacing: 8) {
                         Rectangle()
-                            .fill(Color.defcon(scoreLevel(article.defconScore)))
+                            .fill(Color.defconAdaptive(scoreLevel(article.defconScore), in: colorScheme))
                             .frame(width: 3)
                             .cornerRadius(2)
                         Text(article.title)
