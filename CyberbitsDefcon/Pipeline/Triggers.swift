@@ -124,9 +124,9 @@ enum Triggers {
         #"(stolen|stole|theft of|claimed theft of|stealing) .{0,40}(records|users|emails|customers|accounts|tokens|credentials))\b"#
 
     private static let breachScaleMillionsPattern = #"\bmillions? of\b"#
-    private static let breachScaleNumericPattern  = #"\b\d+[kKmM]\+?\s*(users|records|emails|accounts|customers)\b"#
+    private static let breachScaleNumericPattern  = #"\b\d+[kKmM]\+?\s*(users|records|emails|accounts|customers|repos|repositories|packages|codebases?)\b"#
     private static let breachScaleCommaPattern    =
-        #"\b\d{1,3}(?:,\d{3})+\s+(users|records|emails|accounts|customers|people|schools|patients|students|employees|individuals|organizations)\b"#
+        #"\b\d{1,3}(?:,\d{3})+\s+(users|records|emails|accounts|customers|people|schools|patients|students|employees|individuals|organizations|repos|repositories|packages|codebases?)\b"#
 
     private static var criticalSectorPattern: String {
         let esc = Vocabulary.criticalSectors.map { NSRegularExpression.escapedPattern(for: $0) }.joined(separator: "|")

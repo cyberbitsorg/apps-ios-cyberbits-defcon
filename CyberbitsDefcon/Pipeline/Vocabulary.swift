@@ -7,6 +7,8 @@ enum Vocabulary {
         "ransomware attack", "critical infrastructure",
         "infostealer", "stealer campaign", "malware campaign",
         "supply chain attack", "credential stealer",
+        "malicious extension", "malicious plugin",
+        "malicious package", "malicious dependency",
     ]
 
     static let tier2: [String] = [
@@ -46,6 +48,7 @@ enum Vocabulary {
         "rail", "railway", "metro", "transit", "subway",
         "school", "schools", "k-12",
         "hospital system", "health system", "healthcare",
+        "package registry",
     ]
 
     static let knownStealers: [String] = [
