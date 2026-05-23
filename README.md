@@ -7,7 +7,7 @@ Surfaces the current cyber threat level with supporting indicators and a feed of
 - Swift 5.9 + SwiftUI
 - BackgroundTasks for periodic refresh (`com.cyberbits.defcon.refresh`)
 - UserNotifications for threat-level alerts
-- File-based persistence in [Data/](CyberbitsDefcon/Data/)
+- SwiftData persistence, with store accessors in [Data/](CyberbitsDefcon/Data/)
 - iOS 17+, iPhone & iPad
 
 ## Project generation
