@@ -155,6 +155,11 @@ enum Scorer {
         }
         if let best = scores.max() { return best }
 
+        // "max severity" / "maximum severity" — vendor-press shorthand for CVSS ~10.
+        if NSRegularExpression.cached(#"\bmax(?:imum)?\s+severity\b"#).firstMatch(in: text) != nil {
+            return 9.0
+        }
+
         // 2) CVE id + severity word co-occurrence
         if NSRegularExpression.cached(cveIdPattern).firstMatch(in: text) != nil {
             let matched = severityWords

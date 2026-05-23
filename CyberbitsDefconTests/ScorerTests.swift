@@ -30,6 +30,15 @@ final class ScorerTests: XCTestCase {
         XCTAssertLessThanOrEqual(r.score, 100)
     }
 
+    func test_articleScore_maxSeverityPhraseScores9() {
+        // "max severity" / "maximum severity" → infers CVSS 9.0 → cveScore 27
+        let r = Scorer.computeArticleScore(
+            title: "Ubiquiti patches three max severity unifi os vulnerabilities",
+            summary: ""
+        )
+        XCTAssertEqual(r.cve, 27.0, accuracy: 0.1)
+    }
+
     func test_articleScore_explicitCVSSReadsBest() {
         let r = Scorer.computeArticleScore(
             title: "OpenSSL vulnerability",

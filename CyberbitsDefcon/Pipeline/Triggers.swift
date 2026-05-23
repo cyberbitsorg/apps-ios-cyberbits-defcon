@@ -1,33 +1,39 @@
 import Foundation
 
 enum TriggerType: String, CaseIterable {
-    case activeExploitation = "active_exploitation"
-    case kevAddition         = "kev_addition"
-    case criticalScopeVuln   = "critical_scope_vuln"
-    case confirmedBreach     = "confirmed_breach"
-    case aptCampaign         = "apt_campaign"
-    case malwareCampaign     = "malware_campaign"
+    case activeExploitation      = "active_exploitation"
+    case kevAddition             = "kev_addition"
+    case ceilingCvss             = "ceiling_cvss"
+    case supplyChainCompromise   = "supply_chain_compromise"
+    case criticalScopeVuln       = "critical_scope_vuln"
+    case confirmedBreach         = "confirmed_breach"
+    case aptCampaign             = "apt_campaign"
+    case malwareCampaign         = "malware_campaign"
 
     /// Track A base score for this trigger (0–100). Matches docker `TRIGGER_BASE`.
     var baseScore: Double {
         switch self {
-        case .activeExploitation: return 70
-        case .kevAddition:        return 70
-        case .criticalScopeVuln:  return 65
-        case .confirmedBreach:    return 65
-        case .aptCampaign:        return 60
-        case .malwareCampaign:    return 55
+        case .activeExploitation:    return 70
+        case .kevAddition:           return 70
+        case .ceilingCvss:           return 65
+        case .supplyChainCompromise: return 65
+        case .criticalScopeVuln:     return 65
+        case .confirmedBreach:       return 65
+        case .aptCampaign:           return 60
+        case .malwareCampaign:       return 55
         }
     }
 
     var label: String {
         switch self {
-        case .activeExploitation: return "Active Exploitation"
-        case .kevAddition:        return "KEV Addition"
-        case .criticalScopeVuln:  return "Critical Scope Vuln"
-        case .confirmedBreach:    return "Confirmed Breach"
-        case .aptCampaign:        return "APT Campaign"
-        case .malwareCampaign:    return "Malware Campaign"
+        case .activeExploitation:    return "Active Exploitation"
+        case .kevAddition:           return "KEV Addition"
+        case .ceilingCvss:           return "Ceiling CVSS"
+        case .supplyChainCompromise: return "Supply Chain Compromise"
+        case .criticalScopeVuln:     return "Critical Scope Vuln"
+        case .confirmedBreach:       return "Confirmed Breach"
+        case .aptCampaign:           return "APT Campaign"
+        case .malwareCampaign:       return "Malware Campaign"
         }
     }
 }
@@ -41,17 +47,18 @@ enum Triggers {
 
     /// Explicit precedence order — matches docker `PRECEDENCE`. Highest-severity first.
     private static let precedence: [TriggerType] = [
-        .activeExploitation, .kevAddition, .criticalScopeVuln,
-        .confirmedBreach, .aptCampaign, .malwareCampaign,
+        .activeExploitation, .kevAddition, .ceilingCvss, .supplyChainCompromise,
+        .criticalScopeVuln, .confirmedBreach, .aptCampaign, .malwareCampaign,
     ]
 
     /// Detect the highest-precedence trigger in `text`. Returns nil if none match.
     /// `text` must be pre-lowercased. Contest/bug-bounty contexts (Pwn2Own, CTF,
-    /// HackerOne) exclude active_exploitation, kev_addition, critical_scope_vuln.
+    /// HackerOne) exclude active_exploitation, kev_addition, ceiling_cvss, critical_scope_vuln.
     static func detect(_ text: String) -> TriggerMatch? {
         let contest = isContestContext(text)
         for trigger in precedence {
-            if contest, trigger == .activeExploitation || trigger == .kevAddition || trigger == .criticalScopeVuln {
+            if contest, trigger == .activeExploitation || trigger == .kevAddition
+                || trigger == .ceilingCvss || trigger == .criticalScopeVuln {
                 continue
             }
             if let matched = match(trigger, in: text) {
@@ -165,6 +172,18 @@ enum Triggers {
 
     private static let campaignVerbPattern = #"\b(targeting|deploys?|distributes?|spreads?|drops?|delivers?|campaign|infects?|infecting)\b"#
 
+    // ceiling_cvss: explicit CVSS 10.0 / 9.8 / 9.9
+    private static let ceilingCvssPattern = #"\bcvss[^\n]{0,20}?(10(?:\.0)?|9\.[89])\b"#
+
+    // supply_chain_compromise: artifact + badness + scale
+    private static let supplyChainArtifactPattern =
+        #"\b(repos|repositories|packages|codebases?|workflows|ci/cd|registry|"# +
+        #"npm|pypi|rubygems|crates\.io|docker images?|container images?|maven|nuget)\b"#
+    private static let supplyChainBadnessPattern =
+        #"\b(malicious|compromised?|poisoned|backdoor(?:ed)?|typosquat\w*|trojanized|infected|hijacked)\b"#
+    private static let supplyChainScalePattern =
+        #"\b(\d{1,3}(?:,\d{3})+|\d{2,}|hundreds|thousands|dozens)\b"#
+
     private static let contestPattern =
         #"\bpwn2own\b|\bcapture[- ]the[- ]flag\b|\bctf\b|\bhack(?:athon|fest|the box)\b|"# +
         #"\bbug bounty\b|\bdef ?con (?:ctf|village|finals?)\b|\bhackone\b|\bhackerone\b|"# +
@@ -216,6 +235,16 @@ enum Triggers {
             guard let vuln = regex(vulnKeywordPattern).firstMatch(in: text) else { return nil }
             guard hasScopeAmplifier(text) else { return nil }
             return text.substring(vuln.range)
+
+        case .ceilingCvss:
+            guard let m = regex(ceilingCvssPattern).firstMatch(in: text) else { return nil }
+            return text.substring(m.range)
+
+        case .supplyChainCompromise:
+            guard let artifact = regex(supplyChainArtifactPattern).firstMatch(in: text) else { return nil }
+            guard regex(supplyChainBadnessPattern).firstMatch(in: text) != nil else { return nil }
+            guard regex(supplyChainScalePattern).firstMatch(in: text) != nil else { return nil }
+            return text.substring(artifact.range)
 
         case .malwareCampaign:
             let noun = regex(malwareNounPattern).firstMatch(in: text)
