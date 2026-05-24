@@ -14,7 +14,7 @@ struct ArticleScoreResult {
 /// Result of computing the global DEFCON score (v2).
 struct GlobalScoreResult {
     let score: Double           // 0–100
-    let weightedMax: Double     // best article * (1 - age/24h)
+    let weightedMax: Double     // best article * (1 - age/windowHours)
     let volumeBonus: Double     // 0–10
     let trigger: TriggerType?
     let triggerArticleTitle: String?
@@ -82,16 +82,33 @@ enum Scorer {
         let publishedAt: Date
     }
 
-    private static let windowHours: Double = 24
+    private static let windowHoursWeekday: Double = 48
+    private static let windowHoursWeekend: Double = 72
     private static let volumeBonusCap: Double = 10
 
-    static func computeGlobalScore(window: [WindowArticle], newCount: Int, baseline: Double?) -> GlobalScoreResult {
+    /// Returns the active decay window in hours, based on the UTC day of `now`.
+    /// Weekends (Sat/Sun UTC) use a 72h window; weekdays use 48h.
+    static func currentWindowHours(now: Date = Date()) -> Double {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        let weekday = cal.component(.weekday, from: now)
+        // Cocoa: 1=Sunday, 7=Saturday
+        return (weekday == 1 || weekday == 7) ? windowHoursWeekend : windowHoursWeekday
+    }
+
+    static func computeGlobalScore(
+        window: [WindowArticle],
+        newCount: Int,
+        baseline: Double?,
+        now: Date = Date(),
+        windowHours: Double? = nil
+    ) -> GlobalScoreResult {
+        let activeWindow = windowHours ?? currentWindowHours(now: now)
         var weightedMax: Double = 0
         var winner: WindowArticle?
-        let now = Date()
         for art in window {
             let ageHours = now.timeIntervalSince(art.publishedAt) / 3600
-            let weight = max(0, 1.0 - ageHours / windowHours)
+            let weight = max(0, 1.0 - ageHours / activeWindow)
             let contribution = art.score * weight
             if contribution > weightedMax {
                 weightedMax = contribution

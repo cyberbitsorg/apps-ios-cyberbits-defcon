@@ -81,7 +81,9 @@ final class ScorerTests: XCTestCase {
         let old = Scorer.WindowArticle(title: "old", score: 90,
                                        trigger: .activeExploitation,
                                        publishedAt: now.addingTimeInterval(-23 * 3600))
-        let g = Scorer.computeGlobalScore(window: [old, recent], newCount: 0, baseline: nil)
+        // Pin to the legacy 24h window so the math stays deterministic.
+        let g = Scorer.computeGlobalScore(window: [old, recent], newCount: 0,
+                                          baseline: nil, now: now, windowHours: 24)
         // The recent 80-score article has weight ≈ 1; the 23h-old article has weight ≈ 1/24.
         XCTAssertEqual(g.triggerArticleTitle, "fresh")
         XCTAssertEqual(g.weightedMax, 80, accuracy: 1.0)
@@ -92,4 +94,48 @@ final class ScorerTests: XCTestCase {
         let g = Scorer.computeGlobalScore(window: [], newCount: 100, baseline: 1.0)
         XCTAssertEqual(g.volumeBonus, 10, accuracy: 0.01)
     }
+
+    // MARK: - Weekend-aware decay window
+
+    /// Build a UTC date for explicit Y/M/D.
+    private func utcDate(_ y: Int, _ m: Int, _ d: Int, hour: Int = 12) -> Date {
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = TimeZone(identifier: "UTC")!
+        return cal.date(from: DateComponents(year: y, month: m, day: d, hour: hour))!
+    }
+
+    func test_currentWindowHours_weekendUses72h() {
+        // 2026-05-23 is a Saturday (UTC).
+        let saturday = utcDate(2026, 5, 23)
+        XCTAssertEqual(Scorer.currentWindowHours(now: saturday), 72)
+        // 2026-05-24 is a Sunday (UTC).
+        let sunday = utcDate(2026, 5, 24)
+        XCTAssertEqual(Scorer.currentWindowHours(now: sunday), 72)
+    }
+
+    func test_currentWindowHours_weekdayUses48h() {
+        // 2026-05-25 is a Monday (UTC).
+        let monday = utcDate(2026, 5, 25)
+        XCTAssertEqual(Scorer.currentWindowHours(now: monday), 48)
+        // 2026-05-29 is a Friday (UTC).
+        let friday = utcDate(2026, 5, 29)
+        XCTAssertEqual(Scorer.currentWindowHours(now: friday), 48)
+    }
+
+    func test_globalScore_windowHoursParameterControlsDecay() {
+        let now = Date()
+        let aged = Scorer.WindowArticle(title: "aged", score: 90,
+                                        trigger: .activeExploitation,
+                                        publishedAt: now.addingTimeInterval(-50 * 3600))
+        // 50h-old article with a 48h window → fully decayed.
+        let short = Scorer.computeGlobalScore(window: [aged], newCount: 0,
+                                              baseline: nil, now: now, windowHours: 48)
+        XCTAssertEqual(short.weightedMax, 0, accuracy: 0.01)
+
+        // Same article with a 72h window → 90 * (72-50)/72 ≈ 27.5.
+        let long = Scorer.computeGlobalScore(window: [aged], newCount: 0,
+                                             baseline: nil, now: now, windowHours: 72)
+        XCTAssertEqual(long.weightedMax, 90 * (72.0 - 50.0) / 72.0, accuracy: 0.5)
+    }
+
 }
