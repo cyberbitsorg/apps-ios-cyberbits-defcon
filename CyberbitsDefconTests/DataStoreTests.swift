@@ -77,7 +77,9 @@ final class DataStoreTests: XCTestCase {
     func test_writeHistory_savesEntry() throws {
         let global = GlobalScoreResult(
             score: 72, weightedMax: 70, volumeBonus: 2,
-            trigger: .activeExploitation, triggerArticleTitle: "Critical RCE in the wild"
+            trigger: .activeExploitation,
+            triggerArticleTitle: "Critical RCE in the wild",
+            triggerArticlePublishedAt: Date()
         )
         DefconStore.writeHistory(global, context: context)
         try context.save()

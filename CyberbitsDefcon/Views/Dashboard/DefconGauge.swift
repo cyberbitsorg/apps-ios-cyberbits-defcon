@@ -33,11 +33,13 @@ struct DefconGauge: View {
                 .accessibilityLabel("DEFCON \(level): \(status?.label ?? "")")
 
             if let trigger = status?.breakdown.trigger {
-                driverRow(label: trigger.label, title: status?.breakdown.triggerArticleTitle)
+                driverRow(label: trigger.label,
+                          title: status?.breakdown.triggerArticleTitle,
+                          publishedAt: status?.breakdown.triggerArticlePublishedAt)
             } else if score == 0 {
-                driverRow(label: "No notable threats", title: nil)
+                driverRow(label: "No notable threats", title: nil, publishedAt: nil)
             } else {
-                driverRow(label: "Elevated", title: "by recent activity")
+                driverRow(label: "Elevated", title: "by recent activity", publishedAt: nil)
             }
 
             if history.count > 1 {
@@ -68,19 +70,30 @@ struct DefconGauge: View {
         .modifier(Defcon1Glow(active: level == 1))
     }
 
-    private func driverRow(label: String, title: String?) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+    private func driverRow(label: String, title: String?, publishedAt: Date?) -> some View {
+        let ageString = publishedAt.flatMap { relativeAge(from: $0) }
+        return VStack(alignment: .leading, spacing: 4) {
             Text("DRIVER")
                 .font(.caption2.weight(.semibold))
                 .foregroundStyle(.secondary)
                 .tracking(1)
             (
                 Text(label).font(.caption.weight(.semibold)).foregroundColor(color) +
-                Text(title.map { ": \($0)" } ?? "").font(.caption).foregroundColor(.secondary)
+                Text(title.map { ": \($0)" } ?? "").font(.caption).foregroundColor(.secondary) +
+                Text(ageString.map { " · \($0)" } ?? "").font(.caption2).foregroundColor(.secondary)
             )
             .lineLimit(2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    /// Localized short relative-age string (e.g. "14h ago"). Suppressed for
+    /// future-dated drivers (clock skew) by returning nil.
+    private func relativeAge(from date: Date) -> String? {
+        if date > Date() { return nil }
+        let f = RelativeDateTimeFormatter()
+        f.unitsStyle = .short
+        return f.localizedString(for: date, relativeTo: Date())
     }
 
     private var trendIcon: String {
@@ -257,7 +270,8 @@ private struct Defcon1Glow: ViewModifier {
 #Preview {
     let breakdown = DefconBreakdown(weightedMax: 88, volumeBonus: 0,
                                     trigger: .activeExploitation,
-                                    triggerArticleTitle: "Critical RCE exploited in the wild")
+                                    triggerArticleTitle: "Critical RCE exploited in the wild",
+                                    triggerArticlePublishedAt: Date().addingTimeInterval(-14 * 3600))
     let status = DefconStatus(breakdown: breakdown, trend: .rising, computedAt: Date())
     return DefconGauge(status: status)
         .padding()

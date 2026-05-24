@@ -10,10 +10,13 @@ final class DefconHistory {
     var volumeBonus: Double
     var triggerRaw: String?
     var triggerArticleTitle: String?
+    var triggerArticlePublishedAt: Date?
 
     init(score: Double, level: Int, computedAt: Date,
          weightedMax: Double, volumeBonus: Double,
-         trigger: TriggerType? = nil, triggerArticleTitle: String? = nil) {
+         trigger: TriggerType? = nil,
+         triggerArticleTitle: String? = nil,
+         triggerArticlePublishedAt: Date? = nil) {
         self.score = score
         self.level = level
         self.computedAt = computedAt
@@ -21,6 +24,7 @@ final class DefconHistory {
         self.volumeBonus = volumeBonus
         self.triggerRaw = trigger?.rawValue
         self.triggerArticleTitle = triggerArticleTitle
+        self.triggerArticlePublishedAt = triggerArticlePublishedAt
     }
 
     var trigger: TriggerType? {

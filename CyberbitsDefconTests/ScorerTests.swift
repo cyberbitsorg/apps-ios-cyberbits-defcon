@@ -138,4 +138,18 @@ final class ScorerTests: XCTestCase {
         XCTAssertEqual(long.weightedMax, 90 * (72.0 - 50.0) / 72.0, accuracy: 0.5)
     }
 
+    func test_globalScore_propagatesTriggerArticlePublishedAt() {
+        let now = Date()
+        let published = now.addingTimeInterval(-3 * 3600)
+        let art = Scorer.WindowArticle(title: "winner", score: 70,
+                                       trigger: .activeExploitation,
+                                       publishedAt: published)
+        let g = Scorer.computeGlobalScore(window: [art], newCount: 0,
+                                          baseline: nil, now: now, windowHours: 48)
+        XCTAssertEqual(g.triggerArticleTitle, "winner")
+        XCTAssertEqual(g.triggerArticlePublishedAt, published)
+
+        let empty = Scorer.computeGlobalScore(window: [], newCount: 0, baseline: nil)
+        XCTAssertNil(empty.triggerArticlePublishedAt)
+    }
 }

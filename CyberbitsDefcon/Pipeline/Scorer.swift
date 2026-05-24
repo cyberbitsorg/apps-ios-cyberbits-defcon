@@ -18,6 +18,7 @@ struct GlobalScoreResult {
     let volumeBonus: Double     // 0–10
     let trigger: TriggerType?
     let triggerArticleTitle: String?
+    let triggerArticlePublishedAt: Date?
 }
 
 enum Scorer {
@@ -130,7 +131,8 @@ enum Scorer {
             weightedMax: round(weightedMax * 100) / 100,
             volumeBonus: round(volumeBonus * 100) / 100,
             trigger: winner?.trigger,
-            triggerArticleTitle: winner?.title
+            triggerArticleTitle: winner?.title,
+            triggerArticlePublishedAt: winner?.publishedAt
         )
     }
 

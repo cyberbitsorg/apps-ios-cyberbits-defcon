@@ -17,7 +17,8 @@ enum DefconStore {
             weightedMax: global.weightedMax,
             volumeBonus: global.volumeBonus,
             trigger: global.trigger,
-            triggerArticleTitle: global.triggerArticleTitle
+            triggerArticleTitle: global.triggerArticleTitle,
+            triggerArticlePublishedAt: global.triggerArticlePublishedAt
         )
         context.insert(entry)
     }
@@ -46,7 +47,8 @@ enum DefconStore {
             weightedMax: latest.weightedMax,
             volumeBonus: latest.volumeBonus,
             trigger: latest.trigger,
-            triggerArticleTitle: latest.triggerArticleTitle
+            triggerArticleTitle: latest.triggerArticleTitle,
+            triggerArticlePublishedAt: latest.triggerArticlePublishedAt
         )
         return DefconStatus(breakdown: breakdown,
                             trend: trend,

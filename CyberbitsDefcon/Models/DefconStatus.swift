@@ -8,6 +8,7 @@ struct DefconBreakdown {
     let volumeBonus: Double         // 0–10
     let trigger: TriggerType?
     let triggerArticleTitle: String?
+    let triggerArticlePublishedAt: Date?
 
     var total: Double { min(weightedMax + volumeBonus, 100) }
 
