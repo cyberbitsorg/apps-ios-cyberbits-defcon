@@ -39,10 +39,17 @@ enum Scorer {
         let titleBoost = min(Double(titleRaw) / 8.0, 1.0) * 20.0
 
         let trackBUnc = cve + impact + keywords + titleBoost
-        let trackB = min(trackBUnc, 80.0)
+        var trackB = min(trackBUnc, 80.0)
+
+        let isNewsletter = Triggers.isNewsletterTitle(title)
+        if isNewsletter {
+            // Recaps bundle many unrelated threats; keyword density inflates Track B
+            // even though no single item carries a dense article's severity.
+            trackB *= 0.5
+        }
 
         var trigger = Triggers.detect(text)
-        if trigger != nil, Triggers.isNewsletterTitle(title) {
+        if trigger != nil, isNewsletter {
             trigger = nil
         }
 
