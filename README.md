@@ -53,3 +53,7 @@ xcodebuild -project CyberbitsDefcon.xcodeproj \
 - [CyberbitsDefcon/Shared/](CyberbitsDefcon/Shared/) Shared utilities
 - [CyberbitsDefconTests/](CyberbitsDefconTests/) Unit tests
 - [store/](store/) App Store assets
+
+## License
+
+GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
