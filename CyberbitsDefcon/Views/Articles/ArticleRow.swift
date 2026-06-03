@@ -6,13 +6,12 @@ struct ArticleRow: View {
     @State private var pulse = false
     @Environment(\.colorScheme) private var colorScheme
 
-    private func scoreLevel(_ score: Double) -> Int { Scorer.levelFromScore(score) }
-    private var isDefcon1: Bool { scoreLevel(article.defconScore) == 1 }
+    private var isDefcon1: Bool { article.defconLevel == 1 }
 
     var body: some View {
         HStack(spacing: 0) {
             Rectangle()
-                .fill(Color.defcon(scoreLevel(article.defconScore)))
+                .fill(Color.defcon(article.defconLevel))
                 .frame(width: 3)
                 .cornerRadius(2)
                 .padding(.vertical, 4)
@@ -34,9 +33,9 @@ struct ArticleRow: View {
                     Spacer()
                     Text(String(format: "%.0f", article.defconScore))
                         .font(.caption.monospacedDigit().weight(.bold))
-                        .foregroundStyle(Color.defconAdaptive(scoreLevel(article.defconScore), in: colorScheme))
+                        .foregroundStyle(Color.defconAdaptive(article.defconLevel, in: colorScheme))
                         .padding(.horizontal, 6).padding(.vertical, 2)
-                        .background(Color.defcon(scoreLevel(article.defconScore))
+                        .background(Color.defcon(article.defconLevel)
                             .opacity(isDefcon1 ? (pulse ? 0.45 : 0.15) : 0.15),
                                     in: RoundedRectangle(cornerRadius: 5))
                         .overlay(
@@ -49,7 +48,7 @@ struct ArticleRow: View {
                 }
                 HStack {
                     let sourceColor = FeedSource.bleepingComputer.accentColor  // slate-300, uniform across all sources — matches docker fallback
-                    let borderColor = Color.defcon(scoreLevel(article.defconScore))
+                    let borderColor = Color.defcon(article.defconLevel)
                     Text(article.source.abbreviation)
                         .font(.system(size: 9, weight: .bold))
                         .tracking(0.6)

@@ -21,7 +21,7 @@ struct TopThreatsWidget: View {
                 Link(destination: article.url) {
                     HStack(spacing: 8) {
                         Rectangle()
-                            .fill(Color.defconAdaptive(scoreLevel(article.defconScore), in: colorScheme))
+                            .fill(Color.defconAdaptive(article.defconLevel, in: colorScheme))
                             .frame(width: 3)
                             .cornerRadius(2)
                         Text(article.title)
@@ -38,5 +38,4 @@ struct TopThreatsWidget: View {
         .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
     }
 
-    private func scoreLevel(_ score: Double) -> Int { Scorer.levelFromScore(score) }
 }

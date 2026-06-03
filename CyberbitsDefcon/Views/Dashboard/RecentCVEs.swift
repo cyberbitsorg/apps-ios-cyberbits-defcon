@@ -56,16 +56,16 @@ private struct CVEChip: View {
         Link(destination: url) {
             Text(id)
                 .font(.caption.monospacedDigit().weight(.semibold))
-                .foregroundStyle(Color(hex: "3b82f6"))
+                .foregroundStyle(Color.defcon(5))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(
-                    Color(hex: "3b82f6").opacity(0.12),
+                    Color.defcon(5).opacity(0.12),
                     in: RoundedRectangle(cornerRadius: 6)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
-                        .stroke(Color(hex: "3b82f6").opacity(0.35), lineWidth: 0.5)
+                        .stroke(Color.defcon(5).opacity(0.35), lineWidth: 0.5)
                 )
         }
         .buttonStyle(.plain)

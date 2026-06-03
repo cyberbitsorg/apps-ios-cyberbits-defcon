@@ -4,6 +4,7 @@ import SwiftData
 struct TrendingKeywords: View {
     @Query(sort: \Article.publishedAt, order: .reverse) private var articles: [Article]
 
+    // (keyword, severity tier 1–5, display color) — tier multiplies raw hit count to weight high-signal terms
     private static let tracked: [(String, Int, Color)] = [
         ("zero-day", 5, Color(hex: "dc2626")),
         ("ransomware", 4, Color(hex: "dc2626")),

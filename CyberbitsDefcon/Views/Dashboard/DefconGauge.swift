@@ -124,13 +124,7 @@ private struct GaugeArc: View {
     private static let startDeg: Double = 150
     private static let sweepDeg: Double = 240
     private static let trackWidth: CGFloat = 14
-    private static let segmentColors: [Color] = [
-        Color(hex: "3b82f6"), // DEFCON 5
-        Color(hex: "22c55e"), // DEFCON 4
-        Color(hex: "eab308"), // DEFCON 3
-        Color(hex: "dc2626"), // DEFCON 2
-        Color(hex: "ffffff"), // DEFCON 1
-    ]
+    private static let segmentColors: [Color] = (1...5).reversed().map { Color.defcon($0) }
 
     var body: some View {
         GeometryReader { geo in
@@ -252,10 +246,10 @@ private struct Defcon1Glow: ViewModifier {
             content
         } else {
             content
-                .shadow(color: Color(hex: "dc2626").opacity(pulse ? 0.95 : 0.4),
+                .shadow(color: Color.defcon(2).opacity(pulse ? 0.95 : 0.4),
                         radius: pulse ? (mode == .text ? 16 : 18) : (mode == .text ? 6 : 8),
                         x: 0, y: 0)
-                .shadow(color: Color(hex: "dc2626").opacity(pulse ? 0.6 : 0.25),
+                .shadow(color: Color.defcon(2).opacity(pulse ? 0.6 : 0.25),
                         radius: pulse ? (mode == .text ? 24 : 28) : (mode == .text ? 10 : 14),
                         x: 0, y: 0)
                 .onAppear {

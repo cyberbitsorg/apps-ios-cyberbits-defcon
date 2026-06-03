@@ -39,4 +39,5 @@ final class Article {
         guard let triggerRaw else { return nil }
         return TriggerType(rawValue: triggerRaw)
     }
+    var defconLevel: Int { Scorer.levelFromScore(defconScore) }
 }
