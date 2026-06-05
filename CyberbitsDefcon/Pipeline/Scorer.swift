@@ -94,6 +94,21 @@ enum Scorer {
     private static let windowHoursWeekend: Double = 72
     private static let volumeBonusCap: Double = 10
 
+    /// Distribution-aware aggregation: the global score is a weighted blend of the two
+    /// highest-scoring articles, so one lone article can no longer max the gauge.
+    private static let blendW1: Double = 0.6
+    private static let blendW2: Double = 0.4
+
+    /// Single-event spike carve-out: only decisive top-tier triggers may still drive the
+    /// gauge on their own (the point of a DEFCON spike). Mid-tier triggers (malware/apt/
+    /// breach…) must be corroborated by the wider field via the blend.
+    private static let spikeTriggers: Set<TriggerType> = [.activeExploitation, .kevAddition, .ceilingCvss]
+
+    /// Absolute floor for the volume baseline. On-device per-cycle counts are sparse
+    /// (often 0–1 after dedup), so the raw baseline (~0.16) makes a single new article
+    /// look like a multi-x surge. Flooring keeps the bonus dormant unless there is a flood.
+    private static let minVolumeBaseline: Double = 5.0
+
     /// Returns the active decay window in hours, based on the UTC day of `now`.
     /// Weekends (Sat/Sun UTC) use a 72h window; weekdays use 48h.
     static func currentWindowHours(now: Date = Date()) -> Double {
@@ -112,21 +127,49 @@ enum Scorer {
         windowHours: Double? = nil
     ) -> GlobalScoreResult {
         let activeWindow = windowHours ?? currentWindowHours(now: now)
-        var weightedMax: Double = 0
-        var winner: WindowArticle?
-        for art in window {
-            let ageHours = now.timeIntervalSince(art.publishedAt) / 3600
-            let weight = max(0, 1.0 - ageHours / activeWindow)
-            let contribution = art.score * weight
-            if contribution > weightedMax {
-                weightedMax = contribution
-                winner = art
+
+        // Weighted score per article, sorted most-significant first.
+        let scored = window
+            .map { art -> (ws: Double, art: WindowArticle) in
+                let ageHours = now.timeIntervalSince(art.publishedAt) / 3600
+                let weight = max(0, 1.0 - ageHours / activeWindow)
+                return (art.score * weight, art)
             }
+            .sorted { $0.ws > $1.ws }
+
+        // Distribution blend of the top two weighted articles.
+        let blend: Double
+        let blendWinner: WindowArticle?
+        if scored.isEmpty {
+            blend = 0; blendWinner = nil
+        } else if scored.count == 1 {
+            blend = scored[0].ws; blendWinner = scored[0].art
+        } else {
+            blend = blendW1 * scored[0].ws + blendW2 * scored[1].ws
+            blendWinner = scored[0].art
+        }
+
+        // Single-event spike carve-out: highest weighted top-tier-trigger article.
+        var spikeMax: Double = 0
+        var spikeWinner: WindowArticle?
+        for (ws, art) in scored {
+            if let t = art.trigger, spikeTriggers.contains(t), ws > spikeMax {
+                spikeMax = ws; spikeWinner = art
+            }
+        }
+
+        let weightedMax: Double
+        let winner: WindowArticle?
+        if spikeMax > blend {
+            weightedMax = spikeMax; winner = spikeWinner
+        } else {
+            weightedMax = blend; winner = blendWinner
         }
 
         let volumeBonus: Double
         if let baseline, baseline > 0 {
-            let ratio = Double(newCount) / baseline
+            let effectiveBaseline = max(baseline, minVolumeBaseline)
+            let ratio = Double(newCount) / effectiveBaseline
             volumeBonus = max(0, min((ratio - 1) * 10, volumeBonusCap))
         } else {
             volumeBonus = 0

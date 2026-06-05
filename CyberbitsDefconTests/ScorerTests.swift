@@ -95,6 +95,72 @@ final class ScorerTests: XCTestCase {
         XCTAssertEqual(g.volumeBonus, 10, accuracy: 0.01)
     }
 
+    // MARK: - Distribution-aware aggregation (one lone article must not max the gauge)
+
+    func test_globalScore_loneHighNonToptierPulledDownByDistribution() {
+        let now = Date()
+        let window = [
+            Scorer.WindowArticle(title: "lone", score: 65, trigger: .malwareCampaign, publishedAt: now),
+            Scorer.WindowArticle(title: "second", score: 45, trigger: nil, publishedAt: now),
+            Scorer.WindowArticle(title: "low1", score: 10, trigger: nil, publishedAt: now),
+            Scorer.WindowArticle(title: "low2", score: 5, trigger: nil, publishedAt: now),
+        ]
+        let g = Scorer.computeGlobalScore(window: window, newCount: 0, baseline: nil, now: now, windowHours: 48)
+        XCTAssertEqual(g.weightedMax, 0.6 * 65 + 0.4 * 45, accuracy: 0.1) // 57, not 65
+        XCTAssertLessThan(g.weightedMax, 65)
+        XCTAssertEqual(g.triggerArticleTitle, "lone")
+    }
+
+    func test_globalScore_toptierSingleEventStillSpikes() {
+        let now = Date()
+        let window = [
+            Scorer.WindowArticle(title: "crit", score: 80, trigger: .activeExploitation, publishedAt: now),
+            Scorer.WindowArticle(title: "low1", score: 20, trigger: nil, publishedAt: now),
+            Scorer.WindowArticle(title: "low2", score: 15, trigger: nil, publishedAt: now),
+        ]
+        let g = Scorer.computeGlobalScore(window: window, newCount: 0, baseline: nil, now: now, windowHours: 48)
+        XCTAssertEqual(g.weightedMax, 80, accuracy: 0.1)
+        XCTAssertEqual(g.trigger, .activeExploitation)
+        XCTAssertEqual(g.triggerArticleTitle, "crit")
+    }
+
+    func test_globalScore_malwareCampaignDoesNotGetSpikeCarveout() {
+        let now = Date()
+        let window = [
+            Scorer.WindowArticle(title: "lone", score: 65, trigger: .malwareCampaign, publishedAt: now),
+            Scorer.WindowArticle(title: "second", score: 30, trigger: nil, publishedAt: now),
+        ]
+        let g = Scorer.computeGlobalScore(window: window, newCount: 0, baseline: nil, now: now, windowHours: 48)
+        XCTAssertEqual(g.weightedMax, 0.6 * 65 + 0.4 * 30, accuracy: 0.1) // 51, not 65
+    }
+
+    func test_globalScore_twoHighArticlesReachLevel2() {
+        let now = Date()
+        let window = [
+            Scorer.WindowArticle(title: "a", score: 65, trigger: .malwareCampaign, publishedAt: now),
+            Scorer.WindowArticle(title: "b", score: 62, trigger: .malwareCampaign, publishedAt: now),
+        ]
+        let g = Scorer.computeGlobalScore(window: window, newCount: 0, baseline: nil, now: now, windowHours: 48)
+        XCTAssertEqual(g.weightedMax, 0.6 * 65 + 0.4 * 62, accuracy: 0.1) // 63.8
+        XCTAssertEqual(Scorer.levelFromScore(g.score), 2)
+    }
+
+    // MARK: - Volume bonus baseline floor (sparse per-cycle counts must not saturate)
+
+    func test_globalScore_volumeBonusLowBaselineSingleArticleNoBonus() {
+        let now = Date()
+        let window = [Scorer.WindowArticle(title: "a", score: 50, trigger: nil, publishedAt: now)]
+        let g = Scorer.computeGlobalScore(window: window, newCount: 1, baseline: 0.16, now: now, windowHours: 48)
+        XCTAssertEqual(g.volumeBonus, 0, accuracy: 0.001)
+    }
+
+    func test_globalScore_volumeBonusFloorRequiresRealSurge() {
+        let now = Date()
+        let window = [Scorer.WindowArticle(title: "a", score: 50, trigger: nil, publishedAt: now)]
+        let g = Scorer.computeGlobalScore(window: window, newCount: 3, baseline: 0.5, now: now, windowHours: 48)
+        XCTAssertEqual(g.volumeBonus, 0, accuracy: 0.001)
+    }
+
     // MARK: - Weekend-aware decay window
 
     /// Build a UTC date for explicit Y/M/D.
