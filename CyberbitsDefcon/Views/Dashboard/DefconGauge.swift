@@ -21,8 +21,8 @@ struct DefconGauge: View {
                     .tracking(1.5)
                 Spacer()
                 HStack(spacing: 4) {
-                    Image(systemName: trendIcon).font(.caption2)
-                    Text(trendText).font(.caption2)
+                    Image(systemName: trend.iconName).font(.caption2)
+                    Text(trend.label.uppercased()).font(.caption2)
                 }
                 .foregroundStyle(color)
             }
@@ -96,21 +96,7 @@ struct DefconGauge: View {
         return f.localizedString(for: date, relativeTo: Date())
     }
 
-    private var trendIcon: String {
-        switch status?.trend {
-        case .rising: return "arrow.up.right"
-        case .falling: return "arrow.down.right"
-        default: return "arrow.right"
-        }
-    }
-
-    private var trendText: String {
-        switch status?.trend {
-        case .rising: return "RISING"
-        case .falling: return "FALLING"
-        default: return "STABLE"
-        }
-    }
+    private var trend: DefconTrend { status?.trend ?? .stable }
 }
 
 // MARK: - SVG-equivalent Canvas gauge

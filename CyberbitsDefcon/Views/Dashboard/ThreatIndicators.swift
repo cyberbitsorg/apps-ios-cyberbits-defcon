@@ -28,8 +28,8 @@ struct ThreatIndicators: View {
                          value: "\(Int((status?.score ?? 0).rounded()))/100",
                          color: levelColor)
                 StatCard(label: "Trend",
-                         value: trendText,
-                         color: trendColor)
+                         value: trend.label,
+                         color: trend.color)
                 StatCard(label: "Articles",
                          value: "\(articles.count)",
                          color: .secondary)
@@ -40,21 +40,7 @@ struct ThreatIndicators: View {
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(levelColor.opacity(0.25), lineWidth: 1))
     }
 
-    private var trendText: String {
-        switch status?.trend {
-        case .rising:  return "Rising"
-        case .falling: return "Falling"
-        default:       return "Stable"
-        }
-    }
-
-    private var trendColor: Color {
-        switch status?.trend {
-        case .rising:  return Color(hex: "ef4444")
-        case .falling: return Color(hex: "22c55e")
-        default:       return .secondary
-        }
-    }
+    private var trend: DefconTrend { status?.trend ?? .stable }
 }
 
 private struct StatCard: View {

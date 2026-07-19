@@ -1,6 +1,33 @@
 import SwiftUI
 
-enum DefconTrend { case rising, falling, stable }
+enum DefconTrend {
+    case rising, falling, stable
+
+    /// Title-case label (e.g. "Rising"); uppercase at the call site where needed.
+    var label: String {
+        switch self {
+        case .rising:  return "Rising"
+        case .falling: return "Falling"
+        case .stable:  return "Stable"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .rising:  return Color(hex: "ef4444")
+        case .falling: return Color(hex: "22c55e")
+        case .stable:  return .secondary
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .rising:  return "arrow.up.right"
+        case .falling: return "arrow.down.right"
+        case .stable:  return "arrow.right"
+        }
+    }
+}
 
 /// Breakdown of the current global DEFCON score (v2).
 struct DefconBreakdown {
@@ -37,14 +64,7 @@ struct DefconStatus {
 
     static func shortLabel(_ level: Int) -> String {
         // Short tags used by filter chips / pickers
-        switch level {
-        case 1: return "DEFCON 1"
-        case 2: return "DEFCON 2"
-        case 3: return "DEFCON 3"
-        case 4: return "DEFCON 4"
-        case 5: return "DEFCON 5"
-        default: return "—"
-        }
+        (1...5).contains(level) ? "DEFCON \(level)" : "—"
     }
 
     /// `displayedLevel` defaults to `breakdown.level` (raw) but can be overridden
