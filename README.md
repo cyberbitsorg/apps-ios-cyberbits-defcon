@@ -2,6 +2,9 @@
 
 Surfaces the current cyber threat level with supporting indicators and a feed of recent security articles. Android companion lives at [apps-android-cyberbits-defcon](https://github.com/cyberbitsorg/apps-android-cyberbits-defcon).
 
+> [!NOTE]
+> **Not yet on the App Store.** The app is feature-complete and builds/runs on a device, but the actual App Store release (Apple Developer enrollment, code signing, screenshots, review submission) is still a TODO. It's deferred for now given the time, effort, and cost involved, and will be done at a later date.
+
 ## Stack
 
 - Swift 5.9 + SwiftUI
