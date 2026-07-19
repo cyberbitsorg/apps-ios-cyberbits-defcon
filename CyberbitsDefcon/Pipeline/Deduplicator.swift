@@ -64,7 +64,7 @@ struct Deduplicator {
         ("vmware","fusion"),
         ("citrix","netscaler"), ("citrix","adc"),
         ("sonicwall","sma"), ("sonicwall","firewall"),
-        ("oracle","weblogic"), ("oracle","java"),
+        ("oracle","weblogic"), ("oracle","java"), ("oracle","peoplesoft"), ("oracle","e-business"),
         ("openssh",""), ("openssl",""), ("nginx",""), ("apache","struts"),
         ("wordpress",""), ("drupal",""),
     ]

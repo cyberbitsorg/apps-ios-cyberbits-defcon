@@ -63,6 +63,17 @@ final class DeduplicatorTests: XCTestCase {
         XCTAssertFalse(dedup.isDuplicate(article))
     }
 
+    func test_sharedVendorProduct_oraclePeopleSoftDedupes() {
+        // ShinyHunters/Oracle PeopleSoft 0-day story, different headlines: share the
+        // "oracle peoplesoft" vendor-product pair plus another token → duplicate.
+        let dedup = Deduplicator(
+            existingFingerprints: [],
+            recentTitles: ["Oracle mitigates PeopleSoft zero-day exploited in attacks"]
+        )
+        let article = makeArticle(title: "ShinyHunters hacked 100 orgs via Oracle PeopleSoft 0-day")
+        XCTAssertTrue(dedup.isDuplicate(article))
+    }
+
     private func makeArticle(title: String) -> RawArticle {
         RawArticle(guid: UUID().uuidString, title: title, summary: "",
                    url: URL(string: "https://example.com")!, source: .hackread,

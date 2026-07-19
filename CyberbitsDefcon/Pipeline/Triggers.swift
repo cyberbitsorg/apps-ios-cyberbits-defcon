@@ -5,6 +5,7 @@ enum TriggerType: String, CaseIterable {
     case kevAddition             = "kev_addition"
     case ceilingCvss             = "ceiling_cvss"
     case supplyChainCompromise   = "supply_chain_compromise"
+    case publicExploit           = "public_exploit"
     case criticalScopeVuln       = "critical_scope_vuln"
     case confirmedBreach         = "confirmed_breach"
     case aptCampaign             = "apt_campaign"
@@ -17,6 +18,7 @@ enum TriggerType: String, CaseIterable {
         case .kevAddition:           return 70
         case .ceilingCvss:           return 65
         case .supplyChainCompromise: return 65
+        case .publicExploit:         return 65
         case .criticalScopeVuln:     return 65
         case .confirmedBreach:       return 65
         case .aptCampaign:           return 60
@@ -30,6 +32,7 @@ enum TriggerType: String, CaseIterable {
         case .kevAddition:           return "KEV Addition"
         case .ceilingCvss:           return "Ceiling CVSS"
         case .supplyChainCompromise: return "Supply Chain Compromise"
+        case .publicExploit:         return "Public Exploit"
         case .criticalScopeVuln:     return "Critical Scope Vuln"
         case .confirmedBreach:       return "Confirmed Breach"
         case .aptCampaign:           return "APT Campaign"
@@ -48,17 +51,19 @@ enum Triggers {
     /// Explicit precedence order — matches docker `PRECEDENCE`. Highest-severity first.
     private static let precedence: [TriggerType] = [
         .activeExploitation, .kevAddition, .ceilingCvss, .supplyChainCompromise,
-        .criticalScopeVuln, .confirmedBreach, .aptCampaign, .malwareCampaign,
+        .publicExploit, .criticalScopeVuln, .confirmedBreach, .aptCampaign, .malwareCampaign,
     ]
 
     /// Detect the highest-precedence trigger in `text`. Returns nil if none match.
     /// `text` must be pre-lowercased. Contest/bug-bounty contexts (Pwn2Own, CTF,
-    /// HackerOne) exclude active_exploitation, kev_addition, ceiling_cvss, critical_scope_vuln.
+    /// HackerOne) exclude active_exploitation, kev_addition, ceiling_cvss,
+    /// critical_scope_vuln and public_exploit.
     static func detect(_ text: String) -> TriggerMatch? {
         let contest = isContestContext(text)
         for trigger in precedence {
             if contest, trigger == .activeExploitation || trigger == .kevAddition
-                || trigger == .ceilingCvss || trigger == .criticalScopeVuln {
+                || trigger == .ceilingCvss || trigger == .criticalScopeVuln
+                || trigger == .publicExploit {
                 continue
             }
             if let matched = match(trigger, in: text) {
@@ -163,6 +168,23 @@ enum Triggers {
 
     private static let vulnKeywordPattern = #"\b(zero[- ]?day|0[- ]?day|RCE|remote code execution|privilege escalation|unauthenticated)\b"#
 
+    // public_exploit: release/availability signals — each independently implies a
+    // real, public exploit. Matches docker `_PUBLIC_EXPLOIT_RELEASE_PATTERNS`.
+    private static let publicExploitReleasePatterns: [String] = [
+        #"\bexploit code\b"#,
+        #"\bpublic(?:ly available)? exploit\b"#,
+        #"\bproof[- ]of[- ]concept\b"#,
+        #"\bpoc\s+(?:exploit|code|available|released|published|now public)\b"#,
+        #"\b(released?|releases?|publish(?:ed|es)?|drops?|dropped|posts?|posted|leak(?:ed|s)?)\b[^.\n]{0,40}\bexploit\b"#,
+        #"\bexploit\b[^.\n]{0,25}\b(released?|published|now public|posted|available online|now available)\b"#,
+    ]
+
+    // A release signal alone is generic — require a concrete vulnerability
+    // indicator too. Matches docker `_EXPLOIT_VULN_INDICATOR_RE`.
+    private static let exploitVulnIndicatorPattern =
+        #"\b(0[- ]?day|zero[- ]?day|bypass(?:es|ed)?|rce|remote code execution|flaw|bug|"# +
+        #"vulnerabilit(?:y|ies)|cve|privilege escalation|unauthenticated|backdoor)\b"#
+
     private static let malwareNounPattern = #"\b(stealer|infostealer|info-stealer|loader|dropper|keylogger|rat|malware)\b"#
 
     private static var knownStealerPattern: String {
@@ -245,6 +267,25 @@ enum Triggers {
             guard regex(supplyChainBadnessPattern).firstMatch(in: text) != nil else { return nil }
             guard regex(supplyChainScalePattern).firstMatch(in: text) != nil else { return nil }
             return text.substring(artifact.range)
+
+        case .publicExploit:
+            // A release signal alone is generic — require a concrete vuln indicator.
+            guard regex(exploitVulnIndicatorPattern).firstMatch(in: text) != nil else { return nil }
+            for pattern in publicExploitReleasePatterns {
+                for m in regex(pattern).allMatches(in: text) {
+                    let span = text.substring(m.range)
+                    // Pre-window negation ("no public exploit") — 30 chars before the
+                    // match start only (docker `_is_negated(text, m.start())` with no
+                    // post-window). Plus intra-span negation ("exploit ... not released").
+                    let windowStart = max(0, m.range.location - 30)
+                    let preRange = NSRange(location: windowStart, length: m.range.location - windowStart)
+                    let preNegated = regex(negationPattern).firstMatch(in: text, options: [], range: preRange) != nil
+                    let spanNegated = regex(negationPattern).firstMatch(in: span) != nil
+                    if preNegated || spanNegated { continue }
+                    return span
+                }
+            }
+            return nil
 
         case .malwareCampaign:
             let noun = regex(malwareNounPattern).firstMatch(in: text)

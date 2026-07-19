@@ -98,4 +98,58 @@ final class TriggersTests: XCTestCase {
         let text = "actively exploited flaw in 5,000 repos with malicious workflows"
         XCTAssertEqual(Triggers.detect(text.lowercased())?.trigger, .activeExploitation)
     }
+
+    // MARK: - public_exploit
+
+    func test_publicExploit_exploitCodeForZeroDay_fires() {
+        let text = "microsoft's worst nightmare unleashes bitlocker bypass 0-day, another windows exploit code"
+        XCTAssertEqual(Triggers.detect(text.lowercased())?.trigger, .publicExploit)
+    }
+
+    func test_publicExploit_publishedExploitForBypass_fires() {
+        let text = "security researcher has released a new windows bitlocker bypass dubbed greatxml, a day after they published an exploit for microsoft defender"
+        XCTAssertEqual(Triggers.detect(text.lowercased())?.trigger, .publicExploit)
+    }
+
+    func test_publicExploit_proofOfConcept_fires() {
+        let text = "researcher drops proof-of-concept exploit for unpatched fortinet rce flaw"
+        XCTAssertEqual(Triggers.detect(text.lowercased())?.trigger, .publicExploit)
+    }
+
+    func test_publicExploit_yieldsToActiveExploitation() {
+        let text = "exploit code released for zero-day now actively exploited in the wild"
+        XCTAssertEqual(Triggers.detect(text.lowercased())?.trigger, .activeExploitation)
+    }
+
+    func test_publicExploit_negatedNoPublicExploit_doesNotFire() {
+        let text = "critical flaw disclosed but no public exploit is available yet"
+        let m = Triggers.detect(text.lowercased())
+        XCTAssert(m == nil || m?.trigger != .publicExploit)
+    }
+
+    func test_publicExploit_couldBeExploitedNoReleaseSignal_doesNotFire() {
+        let text = "vendor warns the bug could be exploited by attackers in the future"
+        let m = Triggers.detect(text.lowercased())
+        XCTAssert(m == nil || m?.trigger != .publicExploit)
+    }
+
+    func test_publicExploit_contestExcluded() {
+        let text = "researcher released exploit code for windows zero-day at pwn2own berlin"
+        let m = Triggers.detect(text.lowercased())
+        XCTAssert(m == nil || m?.trigger != .publicExploit)
+    }
+
+    // MARK: - Vocabulary: numeric zero-day spellings
+
+    func test_tier1_containsNumericZeroDaySpellings() {
+        XCTAssertTrue(Vocabulary.tier1.contains("0-day"))
+        XCTAssertTrue(Vocabulary.tier1.contains("0day"))
+        XCTAssertTrue(Vocabulary.tier1.contains("0 day"))
+    }
+
+    func test_wordBoundaryRequired_containsNumericZeroDaySpellings() {
+        XCTAssertTrue(Vocabulary.wordBoundaryRequired.contains("0-day"))
+        XCTAssertTrue(Vocabulary.wordBoundaryRequired.contains("0day"))
+        XCTAssertTrue(Vocabulary.wordBoundaryRequired.contains("0 day"))
+    }
 }

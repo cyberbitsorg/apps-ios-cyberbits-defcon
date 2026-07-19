@@ -66,6 +66,26 @@ final class ScorerTests: XCTestCase {
         XCTAssertLessThanOrEqual(r.trackB, 80)
     }
 
+    // MARK: - Per-article: public_exploit regression
+
+    func test_articleScore_publicExploit_bitlockerZeroDay() {
+        let r = Scorer.computeArticleScore(
+            title: "Microsoft's worst 'Nightmare' unleashes BitLocker bypass 0-day",
+            summary: "Another day, another Windows exploit code"
+        )
+        XCTAssertEqual(r.trigger, .publicExploit)
+        XCTAssertGreaterThanOrEqual(r.score, 65)
+    }
+
+    func test_articleScore_publicExploit_greatXmlBypass() {
+        let r = Scorer.computeArticleScore(
+            title: "New GreatXML Exploit Bypasses Windows BitLocker via Recovery Partition XML Files",
+            summary: "Security researcher has released a new Windows BitLocker bypass dubbed GreatXML, a day after they published an exploit for Microsoft Defender."
+        )
+        XCTAssertEqual(r.trigger, .publicExploit)
+        XCTAssertGreaterThanOrEqual(r.score, 65)
+    }
+
     // MARK: - Global (v2)
 
     func test_globalScore_emptyWindowIsZero() {

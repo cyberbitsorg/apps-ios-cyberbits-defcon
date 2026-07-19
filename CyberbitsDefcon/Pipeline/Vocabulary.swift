@@ -2,7 +2,8 @@ import Foundation
 
 enum Vocabulary {
     static let tier1: [String] = [
-        "zero-day", "zero day", "nation-state", "nation state",
+        "zero-day", "zero day", "0-day", "0day", "0 day",
+        "nation-state", "nation state",
         "state-sponsored", "state sponsored",
         "ransomware attack", "critical infrastructure",
         "infostealer", "stealer campaign", "malware campaign",
@@ -58,5 +59,5 @@ enum Vocabulary {
 
     /// Short terms that need word-boundary matching to avoid false positives
     /// ("rce" in "force", "apt" in "capture", "rat" in "rate").
-    static let wordBoundaryRequired: Set<String> = ["rce", "apt", "rat"]
+    static let wordBoundaryRequired: Set<String> = ["rce", "apt", "rat", "0-day", "0day", "0 day"]
 }
