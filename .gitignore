@@ -13,5 +13,8 @@ Packages/
 # macOS
 .DS_Store
 
+# Personal App Store submission notes / TODOs (not part of the public repo)
+store/
+
 # XcodeGen-generated project (keep project.yml authoritative; uncomment to ignore)
 # CyberbitsDefcon.xcodeproj/

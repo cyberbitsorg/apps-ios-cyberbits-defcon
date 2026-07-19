@@ -30,7 +30,7 @@ CLI build:
 ```bash
 xcodebuild -project CyberbitsDefcon.xcodeproj \
   -scheme CyberbitsDefcon \
-  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
   build
 ```
 
@@ -39,7 +39,7 @@ xcodebuild -project CyberbitsDefcon.xcodeproj \
 ```bash
 xcodebuild -project CyberbitsDefcon.xcodeproj \
   -scheme CyberbitsDefcon \
-  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
   test
 ```
 
@@ -52,7 +52,6 @@ xcodebuild -project CyberbitsDefcon.xcodeproj \
 - [CyberbitsDefcon/Data/](CyberbitsDefcon/Data/) Persistence
 - [CyberbitsDefcon/Shared/](CyberbitsDefcon/Shared/) Shared utilities
 - [CyberbitsDefconTests/](CyberbitsDefconTests/) Unit tests
-- [store/](store/) App Store assets
 
 ## License
 
