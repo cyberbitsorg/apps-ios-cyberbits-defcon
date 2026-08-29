@@ -47,7 +47,8 @@ struct ArticleRow: View {
                                 radius: isDefcon1 ? (pulse ? 8 : 3) : 0)
                 }
                 HStack {
-                    let sourceColor = FeedSource.bleepingComputer.accentColor  // slate-300, uniform across all sources — matches docker fallback
+                    // Uniform slate-300 badge across all sources — intentional, matches docker fallback.
+                    let sourceColor = Color(hex: "cbd5e1")
                     let borderColor = Color.defcon(article.defconLevel)
                     Text(article.source.abbreviation)
                         .font(.system(size: 9, weight: .bold))

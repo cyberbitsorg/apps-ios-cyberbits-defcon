@@ -205,7 +205,7 @@ enum Scorer {
         return (cveScore, impactScore, keywordScore)
     }
 
-    private static let cveIdPattern = #"\bCVE[-–— ]?\d{4}[-–— ]?\d{3,}\b"#
+    private static let cveIdPattern = Deduplicator.cvePattern
     private static let severityWords: [(String, Double)] =
         [("critical", 9.0), ("high", 7.0), ("medium", 5.0), ("low", 2.5)]
 
@@ -300,22 +300,5 @@ enum Scorer {
         let denom = max(1.0, log2(Double(tokenCount) + 1))
         let density = Double(raw) / denom
         return min(density / densityCap, 1.0) * 25.0
-    }
-}
-
-// MARK: - Regex cache helper
-
-private extension NSRegularExpression {
-    private static var staticCache: [String: NSRegularExpression] = [:]
-    private static let staticLock = NSLock()
-
-    static func cached(_ pattern: String) -> NSRegularExpression {
-        staticLock.lock(); defer { staticLock.unlock() }
-        if let r = staticCache[pattern] { return r }
-        let r = (try? NSRegularExpression(pattern: pattern,
-                                          options: [.caseInsensitive, .dotMatchesLineSeparators]))
-            ?? NSRegularExpression()
-        staticCache[pattern] = r
-        return r
     }
 }

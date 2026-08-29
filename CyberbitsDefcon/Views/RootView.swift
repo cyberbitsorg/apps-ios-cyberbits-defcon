@@ -3,7 +3,7 @@ import SwiftUI
 struct RootView: View {
     let coordinator: FetchCoordinator
     @Environment(AppState.self) private var appState
-    @AppStorage("appearance") private var appearanceRaw: Int = AppearanceMode.system.rawValue
+    @AppStorage(AppSettings.Keys.appearance) private var appearanceRaw = AppearanceMode.system.rawValue
 
     private var colorScheme: ColorScheme? {
         switch AppearanceMode(rawValue: appearanceRaw) ?? .system {

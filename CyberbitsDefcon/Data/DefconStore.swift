@@ -55,13 +55,4 @@ enum DefconStore {
                             computedAt: latest.computedAt,
                             displayedLevel: latest.level)
     }
-
-    static func history(hours: Int = 24, context: ModelContext) throws -> [DefconHistory] {
-        let since = Date().addingTimeInterval(Double(-hours * 3600))
-        let descriptor = FetchDescriptor<DefconHistory>(
-            predicate: #Predicate { $0.computedAt >= since },
-            sortBy: [SortDescriptor(\.computedAt, order: .forward)]
-        )
-        return try context.fetch(descriptor)
-    }
 }

@@ -2,7 +2,7 @@ import Foundation
 
 enum FeedParser {
 
-    static func parse(xmlData: Data, source: FeedSource) async throws -> [RawArticle] {
+    static func parse(xmlData: Data, source: FeedSource) throws -> [RawArticle] {
         let delegate = XMLFeedDelegate(source: source)
         let parser = XMLParser(data: xmlData)
         parser.delegate = delegate
@@ -10,7 +10,7 @@ enum FeedParser {
         return delegate.articles
     }
 
-    static func parseSecurityAffairs(jsonData: Data) async throws -> [RawArticle] {
+    static func parseSecurityAffairs(jsonData: Data) throws -> [RawArticle] {
         let posts = try JSONDecoder().decode([SAPost].self, from: jsonData)
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

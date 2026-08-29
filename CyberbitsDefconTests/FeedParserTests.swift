@@ -16,7 +16,7 @@ final class FeedParserTests: XCTestCase {
           </item>
         </channel></rss>
         """
-        let articles = try await FeedParser.parse(xmlData: Data(xml.utf8), source: .hackread)
+        let articles = try FeedParser.parse(xmlData: Data(xml.utf8), source: .hackread)
         XCTAssertEqual(articles.count, 1)
         XCTAssertEqual(articles[0].title, "Zero-day in OpenSSL")
         XCTAssertEqual(articles[0].source, .hackread)
@@ -34,7 +34,7 @@ final class FeedParserTests: XCTestCase {
           </item>
         </channel></rss>
         """
-        let articles = try await FeedParser.parse(xmlData: Data(xml.utf8), source: .hackread)
+        let articles = try FeedParser.parse(xmlData: Data(xml.utf8), source: .hackread)
         XCTAssertEqual(articles.count, 0)
     }
 
@@ -51,7 +51,7 @@ final class FeedParserTests: XCTestCase {
           </entry>
         </feed>
         """
-        let articles = try await FeedParser.parse(xmlData: Data(xml.utf8), source: .theRegister)
+        let articles = try FeedParser.parse(xmlData: Data(xml.utf8), source: .theRegister)
         XCTAssertEqual(articles.count, 1)
         XCTAssertEqual(articles[0].title, "Register Security Story")
     }
@@ -61,7 +61,7 @@ final class FeedParserTests: XCTestCase {
         [{"id":12345,"title":{"rendered":"SA Article"},"excerpt":{"rendered":"<p>Summary text</p>"},
           "link":"https://securityaffairs.com/12345","date_gmt":"2024-01-01T12:00:00","categories":[99]}]
         """.data(using: .utf8)!
-        let articles = try await FeedParser.parseSecurityAffairs(jsonData: json)
+        let articles = try FeedParser.parseSecurityAffairs(jsonData: json)
         XCTAssertEqual(articles.count, 1)
         XCTAssertEqual(articles[0].title, "SA Article")
         XCTAssertEqual(articles[0].summary, "Summary text")

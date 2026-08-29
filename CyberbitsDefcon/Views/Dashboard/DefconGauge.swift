@@ -6,7 +6,14 @@ import SwiftData
 /// 240° sweep, 5 coloured segments (blue→white), needle pointing at current score.
 struct DefconGauge: View {
     let status: DefconStatus?
-    @Query(sort: \DefconHistory.computedAt, order: .forward) private var history: [DefconHistory]
+    @Query(sort: \DefconHistory.computedAt, order: .forward) private var allHistory: [DefconHistory]
+
+    /// The trend chart is labelled "24h" — actually window it instead of
+    /// plotting the full (ever-growing) history.
+    private var history: [DefconHistory] {
+        let since = Date().addingTimeInterval(-24 * 3600)
+        return allHistory.filter { $0.computedAt >= since }
+    }
 
     private var level: Int { status?.level ?? 5 }
     private var color: Color { Color.defcon(level) }
@@ -87,13 +94,11 @@ struct DefconGauge: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    /// Localized short relative-age string (e.g. "14h ago"). Suppressed for
-    /// future-dated drivers (clock skew) by returning nil.
+    /// Short relative-age string (e.g. "14 h ago"). Suppressed for future-dated
+    /// drivers (clock skew) by returning nil.
     private func relativeAge(from date: Date) -> String? {
         if date > Date() { return nil }
-        let f = RelativeDateTimeFormatter()
-        f.unitsStyle = .short
-        return f.localizedString(for: date, relativeTo: Date())
+        return RelativeTime.format(date)
     }
 
     private var trend: DefconTrend { status?.trend ?? .stable }

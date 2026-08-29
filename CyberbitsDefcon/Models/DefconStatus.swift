@@ -62,11 +62,6 @@ struct DefconStatus {
         5: "FADE OUT",
     ]
 
-    static func shortLabel(_ level: Int) -> String {
-        // Short tags used by filter chips / pickers
-        (1...5).contains(level) ? "DEFCON \(level)" : "—"
-    }
-
     /// `displayedLevel` defaults to `breakdown.level` (raw) but can be overridden
     /// with the sticky-state-machine level so the UI reflects the displayed value.
     init(breakdown: DefconBreakdown, trend: DefconTrend, computedAt: Date, displayedLevel: Int? = nil) {

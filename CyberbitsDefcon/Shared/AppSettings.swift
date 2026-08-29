@@ -13,35 +13,55 @@ enum AppearanceMode: Int, CaseIterable, Identifiable {
 }
 
 enum AppSettings {
+    /// Single source of truth for UserDefaults keys and default values —
+    /// `@AppStorage` call sites reference these instead of re-hardcoding them.
+    enum Keys {
+        static let appearance = "appearance"
+        static let refreshIntervalMinutes = "refreshIntervalMinutes"
+        static let defconNotificationsEnabled = "defconNotificationsEnabled"
+        static let notificationThreshold = "notificationThreshold"
+        static let newArticleNotificationsEnabled = "newArticleNotificationsEnabled"
+        static let lastRefreshedAt = "lastRefreshedAt"
+    }
+
+    static let defaultRefreshIntervalMinutes = 60
+    static let defaultNotificationThreshold = 3
+
     private static let defaults = UserDefaults.standard
 
     static var appearance: AppearanceMode {
-        get { AppearanceMode(rawValue: defaults.integer(forKey: "appearance")) ?? .system }
-        set { defaults.set(newValue.rawValue, forKey: "appearance") }
+        get { AppearanceMode(rawValue: defaults.integer(forKey: Keys.appearance)) ?? .system }
+        set { defaults.set(newValue.rawValue, forKey: Keys.appearance) }
     }
 
     static var refreshIntervalMinutes: Int {
-        get { let v = defaults.integer(forKey: "refreshIntervalMinutes"); return v == 0 ? 60 : v }
-        set { defaults.set(newValue, forKey: "refreshIntervalMinutes") }
+        get {
+            let v = defaults.integer(forKey: Keys.refreshIntervalMinutes)
+            return v == 0 ? defaultRefreshIntervalMinutes : v
+        }
+        set { defaults.set(newValue, forKey: Keys.refreshIntervalMinutes) }
     }
     static var defconNotificationsEnabled: Bool {
-        get { defaults.object(forKey: "defconNotificationsEnabled") as? Bool ?? true }
-        set { defaults.set(newValue, forKey: "defconNotificationsEnabled") }
+        get { defaults.object(forKey: Keys.defconNotificationsEnabled) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: Keys.defconNotificationsEnabled) }
     }
     static var notificationThreshold: Int {
-        get { let v = defaults.integer(forKey: "notificationThreshold"); return v == 0 ? 3 : v }
-        set { defaults.set(newValue, forKey: "notificationThreshold") }
+        get {
+            let v = defaults.integer(forKey: Keys.notificationThreshold)
+            return v == 0 ? defaultNotificationThreshold : v
+        }
+        set { defaults.set(newValue, forKey: Keys.notificationThreshold) }
     }
     static var newArticleNotificationsEnabled: Bool {
-        get { defaults.object(forKey: "newArticleNotificationsEnabled") as? Bool ?? true }
-        set { defaults.set(newValue, forKey: "newArticleNotificationsEnabled") }
+        get { defaults.object(forKey: Keys.newArticleNotificationsEnabled) as? Bool ?? true }
+        set { defaults.set(newValue, forKey: Keys.newArticleNotificationsEnabled) }
     }
     static var lastRefreshedAt: Date? {
         get {
-            let t = defaults.double(forKey: "lastRefreshedAt")
+            let t = defaults.double(forKey: Keys.lastRefreshedAt)
             return t > 0 ? Date(timeIntervalSince1970: t) : nil
         }
-        set { defaults.set(newValue?.timeIntervalSince1970 ?? 0, forKey: "lastRefreshedAt") }
+        set { defaults.set(newValue?.timeIntervalSince1970 ?? 0, forKey: Keys.lastRefreshedAt) }
     }
     static var needsRefresh: Bool {
         guard let last = lastRefreshedAt else { return true }

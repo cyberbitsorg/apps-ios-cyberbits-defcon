@@ -22,7 +22,7 @@ actor FetchCoordinator {
         let fingerprints = DedupStore.fingerprints(context: modelContext)
         let recentTitles = DedupStore.recentTitles(context: modelContext)
         let recentCves = CVEStore.recentCVEs(context: modelContext)
-        print("[DEFCON] fetch start: storedGuids=\(existingGuids.count) dedupFps=\(fingerprints.count) dedupTitles=\(recentTitles.count) recentCves=\(recentCves.count)")
+        Self.log.info("fetch start: storedGuids=\(existingGuids.count) dedupFps=\(fingerprints.count) dedupTitles=\(recentTitles.count) recentCves=\(recentCves.count)")
 
         // 2. Fetch all feeds concurrently
         var allRaw: [RawArticle] = []
@@ -36,7 +36,7 @@ actor FetchCoordinator {
                 allRaw.append(contentsOf: batch)
             }
         }
-        print("[DEFCON] feeds raw=\(allRaw.count) perSource=\(perSource)")
+        Self.log.debug("feeds raw=\(allRaw.count) perSource=\(perSource)")
 
         // 3. Deduplicate. Cheap GUID match first (skips the TF-IDF cosine pass for
         //    anything already in the store), then fingerprint + near-dupe checks
@@ -55,8 +55,10 @@ actor FetchCoordinator {
             let fp = Deduplicator.fingerprint(raw.title)
             if acceptedFingerprints.contains(fp) { droppedBatchFp += 1; continue }
             if fingerprints.contains(fp) { droppedExistingFp += 1; continue }
+            // The persisted fingerprint set is already checked one line up, but pass
+            // it through so isDuplicate's own L1 check isn't silently disabled.
             let dedup = Deduplicator(
-                existingFingerprints: [],
+                existingFingerprints: fingerprints,
                 recentTitles: corpusTitles,
                 recentTokens: corpusTokens,
                 recentCves: seenCves
@@ -71,7 +73,7 @@ actor FetchCoordinator {
             unique.append(raw)
         }
         let newCount = unique.count
-        print("[DEFCON] dedup: new=\(newCount) droppedGuid=\(droppedGuid) droppedBatchFp=\(droppedBatchFp) droppedExistingFp=\(droppedExistingFp) droppedNearDupe=\(droppedNearDupe) dt=\(Int(Date().timeIntervalSince(t0)*1000))ms")
+        Self.log.debug("dedup: new=\(newCount) droppedGuid=\(droppedGuid) droppedBatchFp=\(droppedBatchFp) droppedExistingFp=\(droppedExistingFp) droppedNearDupe=\(droppedNearDupe) dt=\(Int(Date().timeIntervalSince(t0)*1000))ms")
 
         // 4. Score (v2 per-article: Track A trigger + Track B sub-scores) and store
         for (idx, raw) in unique.enumerated() {
@@ -86,7 +88,7 @@ actor FetchCoordinator {
         do {
             try modelContext.save()
         } catch {
-            print("[DEFCON] save after insert FAILED: \(error.localizedDescription)")
+            Self.log.error("save after insert FAILED: \(error.localizedDescription)")
         }
 
         // 5. Trim (articles to 100/20, dedup log to 300, CVE log by TTL, volume window 168)
@@ -98,47 +100,21 @@ actor FetchCoordinator {
         do {
             try modelContext.save()
         } catch {
-            print("[DEFCON] save after trim FAILED: \(error.localizedDescription)")
+            Self.log.error("save after trim FAILED: \(error.localizedDescription)")
         }
         let articlesAfter = (try? modelContext.fetch(FetchDescriptor<Article>()).count) ?? -1
         let dedupAfter = (try? modelContext.fetch(FetchDescriptor<DedupRecord>()).count) ?? -1
-        print("[DEFCON] after save+trim: articles=\(articlesAfter) dedup=\(dedupAfter) total=\(Int(Date().timeIntervalSince(t0)*1000))ms")
+        Self.log.debug("after save+trim: articles=\(articlesAfter) dedup=\(dedupAfter) total=\(Int(Date().timeIntervalSince(t0)*1000))ms")
 
-        // 6. Compute global DEFCON (v2): weighted-max over the 20 most recent articles.
-        //    Matches docker's `get_recent_articles(pool, limit=20)` scope so the
-        //    gauge reflects active threats rather than the full backfill.
-        let windowArticles = ArticleStore.fetchRecent(limit: 20, context: modelContext)
-        let window: [Scorer.WindowArticle] = windowArticles.map { article in
-            Scorer.WindowArticle(
-                title: article.title,
-                score: article.defconScore,
-                trigger: article.trigger,
-                publishedAt: article.publishedAt
-            )
-        }
-        // Volume baseline is the mean of the last 168 refresh counts (nil until coldStartMin).
-        let baseline = VolumeStore.baseline(context: modelContext)
-        let global = Scorer.computeGlobalScore(window: window, newCount: newCount, baseline: baseline)
-
-        // 7. Apply sticky-level state machine, then write history.
-        let rawLevel = Scorer.levelFromScore(global.score)
-        let stickyState = StickyLevel.read(context: modelContext)
-        let evidenceAnchor = Self.evidenceAnchor(for: stickyState.floor, in: windowArticles)
-        let sticky = StickyLevel.computeDisplayedLevel(
-            rawLevel: rawLevel,
-            state: stickyState,
-            evidenceAnchor: evidenceAnchor
-        )
-        StickyLevel.write(sticky, context: modelContext)
-        DefconStore.writeHistory(global, displayedLevel: sticky.displayedLevel, context: modelContext)
-        try? modelContext.save()
+        // 6-7. Compute global DEFCON over the recent-article window and apply the
+        //      sticky-level state machine (shared with tickStickyLevel).
+        let newStatus = computeAndApplySticky(newCount: newCount)
 
         // 8. Update last refresh timestamp
         AppSettings.lastRefreshedAt = Date()
 
         // 9. Notify
         //   In the inverted DEFCON scale, a LOWER level number means a HIGHER threat.
-        let newStatus = try? DefconStore.currentStatus(context: modelContext)
         if let status = newStatus, status.level < previousLevel {
             await MainActor.run {
                 NotificationScheduler.notifyDefconLevelChange(newLevel: status.level, label: status.label)
@@ -160,7 +136,17 @@ actor FetchCoordinator {
     func tickStickyLevel() async -> DefconStatus? {
         let windowArticles = ArticleStore.fetchRecent(limit: 20, context: modelContext)
         guard !windowArticles.isEmpty else { return nil }
-        let window: [Scorer.WindowArticle] = windowArticles.map { article in
+        return computeAndApplySticky(newCount: 0, windowArticles: windowArticles)
+    }
+
+    /// Shared tail of the fetch cycle and the sticky tick: compute the global
+    /// DEFCON score over the 20 most recent articles (matching docker's
+    /// `get_recent_articles(pool, limit=20)` scope), apply the sticky-level
+    /// state machine, write history, and save.
+    private func computeAndApplySticky(newCount: Int,
+                                       windowArticles: [Article]? = nil) -> DefconStatus? {
+        let recent = windowArticles ?? ArticleStore.fetchRecent(limit: 20, context: modelContext)
+        let window: [Scorer.WindowArticle] = recent.map { article in
             Scorer.WindowArticle(
                 title: article.title,
                 score: article.defconScore,
@@ -168,20 +154,26 @@ actor FetchCoordinator {
                 publishedAt: article.publishedAt
             )
         }
+        // Volume baseline is the mean of the last 168 refresh counts (nil until coldStartMin).
         let baseline = VolumeStore.baseline(context: modelContext)
-        let global = Scorer.computeGlobalScore(window: window, newCount: 0, baseline: baseline)
+        let global = Scorer.computeGlobalScore(window: window, newCount: newCount, baseline: baseline)
+
         let rawLevel = Scorer.levelFromScore(global.score)
         let stickyState = StickyLevel.read(context: modelContext)
-        let evidenceAnchor = Self.evidenceAnchor(for: stickyState.floor, in: windowArticles)
+        let evidenceAnchor = Self.evidenceAnchor(for: stickyState.floor, in: recent)
         let sticky = StickyLevel.computeDisplayedLevel(
             rawLevel: rawLevel,
             state: stickyState,
             evidenceAnchor: evidenceAnchor
         )
-        print("[DEFCON] tick: raw=\(rawLevel) floor=\(stickyState.floor ?? -1) until=\(stickyState.untilAt?.description ?? "nil") evidence=\(evidenceAnchor?.description ?? "nil") → displayed=\(sticky.displayedLevel) newFloor=\(sticky.newFloor) newUntil=\(sticky.newUntilAt?.description ?? "nil")")
+        Self.log.debug("sticky: raw=\(rawLevel) floor=\(stickyState.floor ?? -1) until=\(stickyState.untilAt?.description ?? "nil") evidence=\(evidenceAnchor?.description ?? "nil") → displayed=\(sticky.displayedLevel) newFloor=\(sticky.newFloor) newUntil=\(sticky.newUntilAt?.description ?? "nil")")
         StickyLevel.write(sticky, context: modelContext)
         DefconStore.writeHistory(global, displayedLevel: sticky.displayedLevel, context: modelContext)
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            Self.log.error("save after sticky/history write FAILED: \(error.localizedDescription)")
+        }
         return try? DefconStore.currentStatus(context: modelContext)
     }
 
@@ -201,11 +193,14 @@ actor FetchCoordinator {
         do {
             let (data, _) = try await URLSession.shared.data(from: source.feedURL)
             if source.isJSONAPI {
-                return (try? await FeedParser.parseSecurityAffairs(jsonData: data)) ?? []
+                return (try? FeedParser.parseSecurityAffairs(jsonData: data)) ?? []
             } else {
-                return (try? await FeedParser.parse(xmlData: data, source: source)) ?? []
+                return (try? FeedParser.parse(xmlData: data, source: source)) ?? []
             }
         } catch {
+            // A failed feed looks like "no news" downstream; log so dead networks
+            // are distinguishable from quiet ones in Console.
+            Self.log.error("fetch \(source.rawValue, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
             return []
         }
     }

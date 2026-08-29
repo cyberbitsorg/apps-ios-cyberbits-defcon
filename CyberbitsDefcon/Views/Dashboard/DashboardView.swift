@@ -37,7 +37,7 @@ struct DashboardView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        Task { await refresh() }
+                        Task { await appState.refresh(using: coordinator) }
                     } label: {
                         if appState.isRefreshing {
                             ProgressView().controlSize(.small)
@@ -48,14 +48,7 @@ struct DashboardView: View {
                     .disabled(appState.isRefreshing)
                 }
             }
-            .refreshable { await refresh() }
+            .refreshable { await appState.refresh(using: coordinator) }
         }
-    }
-
-    private func refresh() async {
-        guard !appState.isRefreshing else { return }
-        appState.isRefreshing = true
-        appState.defconStatus = await coordinator.runFetchCycle()
-        appState.isRefreshing = false
     }
 }

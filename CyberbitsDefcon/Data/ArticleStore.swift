@@ -17,32 +17,10 @@ enum ArticleStore {
         context.insert(article)
     }
 
-    /// All articles within the given lookback window (default 24h), used for v2 global scoring.
-    static func articlesInWindow(hours: Int = 24, context: ModelContext) -> [Article] {
-        let since = Date().addingTimeInterval(Double(-hours * 3600))
-        let descriptor = FetchDescriptor<Article>(
-            predicate: #Predicate { $0.publishedAt >= since },
-            sortBy: [SortDescriptor(\.publishedAt, order: .reverse)]
-        )
-        return (try? context.fetch(descriptor)) ?? []
-    }
-
-    static func existingFingerprints(context: ModelContext) -> Set<String> {
-        let descriptor = FetchDescriptor<Article>()
-        let all = (try? context.fetch(descriptor)) ?? []
-        return Set(all.map(\.fingerprint))
-    }
-
     static func existingGuids(context: ModelContext) -> Set<String> {
         let descriptor = FetchDescriptor<Article>()
         let all = (try? context.fetch(descriptor)) ?? []
         return Set(all.map(\.guid))
-    }
-
-    static func recentTitles(limit: Int = 300, context: ModelContext) -> [String] {
-        var descriptor = FetchDescriptor<Article>(sortBy: [SortDescriptor(\.publishedAt, order: .reverse)])
-        descriptor.fetchLimit = limit
-        return ((try? context.fetch(descriptor)) ?? []).map(\.title)
     }
 
     static func trim(totalLimit: Int = 100, perSourceLimit: Int = 20, context: ModelContext) {

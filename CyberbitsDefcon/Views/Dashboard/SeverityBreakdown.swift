@@ -29,12 +29,7 @@ struct SeverityBreakdown: View {
     private var maxCount: Int { max(counts.map(\.count).max() ?? 1, 1) }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("SEVERITY BREAKDOWN")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .tracking(1)
-
+        DashboardCard(title: "SEVERITY BREAKDOWN") {
             HStack(alignment: .bottom, spacing: 8) {
                 ForEach(counts) { item in
                     Button {
@@ -70,7 +65,5 @@ struct SeverityBreakdown: View {
             }
             .frame(height: 96, alignment: .bottom)
         }
-        .padding()
-        .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
     }
 }

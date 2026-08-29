@@ -12,11 +12,7 @@ struct TopThreatsWidget: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("TOP THREATS")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .tracking(1)
+        DashboardCard(title: "TOP THREATS") {
             ForEach(top5) { article in
                 Link(destination: article.url) {
                     HStack(spacing: 8) {
@@ -33,9 +29,5 @@ struct TopThreatsWidget: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
     }
-
 }

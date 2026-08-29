@@ -64,7 +64,7 @@ struct ArticlesView: View {
                     }
                 }
                 .listStyle(.plain)
-                .refreshable { await refresh() }
+                .refreshable { await appState.refresh(using: coordinator) }
 
                 if filtered.count > Self.pageSize {
                     PaginationBar(currentPage: $currentPage, totalPages: totalPages,
@@ -100,13 +100,6 @@ struct ArticlesView: View {
             $0.readAt = isRead ? now : nil
         }
         try? context.save()
-    }
-
-    private func refresh() async {
-        guard !appState.isRefreshing else { return }
-        appState.isRefreshing = true
-        appState.defconStatus = await coordinator.runFetchCycle()
-        appState.isRefreshing = false
     }
 }
 

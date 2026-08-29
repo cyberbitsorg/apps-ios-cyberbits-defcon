@@ -69,16 +69,11 @@ struct Deduplicator {
         ("wordpress",""), ("drupal",""),
     ]
 
-    // CVE-2024-1234, CVE-2024-12345, CVE 2024 12345 (incl. en/em dashes & spaces)
-    private static let cveRegex = try! NSRegularExpression(
-        pattern: #"\bCVE[-–— ]?(\d{4})[-–— ]?(\d{3,7})\b"#,
-        options: [.caseInsensitive]
-    )
+    // CVE-2024-1234, CVE-2024-12345, CVE 2024 12345 (incl. en/em dashes & spaces).
+    // Canonical pattern for the whole app — Scorer and RecentCVEs reuse it.
+    static let cvePattern = #"\bCVE[-–— ]?(\d{4})[-–— ]?(\d{3,7})\b"#
 
-    private static let quotedPhraseRegex = try! NSRegularExpression(
-        pattern: #"['""''""]([^'""]{4,})['""''""]"#,
-        options: []
-    )
+    private static let quotedPhrasePattern = #"['""''""]([^'""]{4,})['""''""]"#
 
     // MARK: - Fingerprint (Layer 1)
 
@@ -94,7 +89,7 @@ struct Deduplicator {
     static func extractCVEs(_ text: String) -> Set<String> {
         let ns = text as NSString
         var out = Set<String>()
-        for m in cveRegex.matches(in: text, range: NSRange(location: 0, length: ns.length)) {
+        for m in NSRegularExpression.cached(cvePattern).matches(in: text, range: NSRange(location: 0, length: ns.length)) {
             let year = ns.substring(with: m.range(at: 1))
             let num  = ns.substring(with: m.range(at: 2))
             out.insert("CVE-\(year)-\(num)")
@@ -192,12 +187,12 @@ struct Deduplicator {
         let monthsA = Set(la.filter { months.contains($0) })
         let monthsB = Set(lb.filter { months.contains($0) })
         if !monthsA.isEmpty && !monthsB.isEmpty && monthsA != monthsB { return true }
-        let yearPattern = try? NSRegularExpression(pattern: #"\b(20\d{2})\b"#)
+        let yearPattern = NSRegularExpression.cached(#"\b(20\d{2})\b"#)
         func years(_ s: String) -> Set<String> {
             let r = NSRange(s.startIndex..., in: s)
-            return Set(yearPattern?.matches(in: s, range: r).compactMap {
+            return Set(yearPattern.matches(in: s, range: r).compactMap {
                 Range($0.range(at: 1), in: s).map { String(s[$0]) }
-            } ?? [])
+            })
         }
         let ya = years(a); let yb = years(b)
         if !ya.isEmpty && !yb.isEmpty && ya != yb { return true }
@@ -208,7 +203,7 @@ struct Deduplicator {
         let la = a.lowercased(); let lb = b.lowercased()
         for s in [a, b] {
             let ns = s as NSString
-            let matches = quotedPhraseRegex.matches(in: s, range: NSRange(location: 0, length: ns.length))
+            let matches = NSRegularExpression.cached(quotedPhrasePattern).matches(in: s, range: NSRange(location: 0, length: ns.length))
             for m in matches {
                 let phrase = ns.substring(with: m.range(at: 1)).lowercased()
                     .trimmingCharacters(in: .whitespaces)

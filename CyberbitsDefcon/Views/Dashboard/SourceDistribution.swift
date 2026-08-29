@@ -20,11 +20,7 @@ struct SourceDistribution: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("SOURCE DISTRIBUTION")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .tracking(1)
+        DashboardCard(title: "SOURCE DISTRIBUTION") {
             HStack(alignment: .center, spacing: 16) {
                 Chart(counts) { item in
                     SectorMark(angle: .value("Count", item.count), innerRadius: .ratio(0.55))
@@ -46,7 +42,5 @@ struct SourceDistribution: View {
                 Spacer()
             }
         }
-        .padding()
-        .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
     }
 }

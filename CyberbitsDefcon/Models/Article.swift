@@ -33,7 +33,9 @@ final class Article {
         self.triggerRaw = trigger?.rawValue
     }
 
-    var url: URL { URL(string: urlString) ?? URL(string: "https://example.com")! }
+    /// Malformed persisted URLs fall back to the Cyberbits homepage rather than
+    /// shipping users off to a third-party placeholder domain.
+    var url: URL { URL(string: urlString) ?? URL(string: "https://cyberbits.systems")! }
     var source: FeedSource { FeedSource(rawValue: sourceRaw) ?? .hackread }
     var trigger: TriggerType? {
         guard let triggerRaw else { return nil }

@@ -13,6 +13,15 @@ final class AppState {
     /// Set by tapping a bar in SeverityBreakdown; cleared by FilterBar chips.
     var articleSeverityFilter: Int? = nil
     var articleSourceFilter: FeedSource? = nil
+
+    /// Shared manual-refresh path for Dashboard / Articles / Settings — one
+    /// implementation instead of three copy-pasted guards.
+    func refresh(using coordinator: FetchCoordinator) async {
+        guard !isRefreshing else { return }
+        isRefreshing = true
+        defconStatus = await coordinator.runFetchCycle()
+        isRefreshing = false
+    }
 }
 
 @main
@@ -78,9 +87,7 @@ struct CyberbitsDefconApp: App {
                 .task {
                     await NotificationScheduler.requestPermission()
                     if AppSettings.needsRefresh {
-                        appState.isRefreshing = true
-                        appState.defconStatus = await coordinator.runFetchCycle()
-                        appState.isRefreshing = false
+                        await appState.refresh(using: coordinator)
                     } else {
                         // No fetch needed, but the sticky-level floor may still
                         // need to decay based on elapsed time alone.

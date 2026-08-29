@@ -5,14 +5,14 @@ enum DedupStore {
     /// Matches docker `RECENT_TITLES_MAX = 300`.
     static let maxRecords = 300
 
-    /// All persisted fingerprints (most recent first).
+    /// All persisted fingerprints.
     static func fingerprints(context: ModelContext) -> Set<String> {
         let descriptor = FetchDescriptor<DedupRecord>()
         let all = (try? context.fetch(descriptor)) ?? []
         return Set(all.map(\.fingerprint))
     }
 
-    /// All persisted titles (most recent first), capped at `maxRecords`.
+    /// Persisted titles, newest first, capped at `maxRecords`.
     static func recentTitles(context: ModelContext) -> [String] {
         var descriptor = FetchDescriptor<DedupRecord>(
             sortBy: [SortDescriptor(\.addedAt, order: .reverse)]

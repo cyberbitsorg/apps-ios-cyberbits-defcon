@@ -13,6 +13,7 @@
 		1F891A4CE78492BE2566D9DD /* NotificationScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80E773D9C9AE524E313F2C95 /* NotificationScheduler.swift */; };
 		27DF2B6E7FF05B061B85668A /* Deduplicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D8921878DB8E3A41E7868B /* Deduplicator.swift */; };
 		2839E0C0F03EB2CBA3044B17 /* ArticleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554433608127759E23797870 /* ArticleStore.swift */; };
+		29DA28C491DA78848A93AACA /* RegexCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD5F85D8FB546793E463957 /* RegexCache.swift */; };
 		373E6BF63B27B73FD4494F5B /* ArticlesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07F50CB5C38DD1C5DEAD7114 /* ArticlesView.swift */; };
 		3781E6F246A03F0C0F53E323 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C369D41E7B41B02004A8BF65 /* RootView.swift */; };
 		3B1A60B0B6EC927A0C42C19E /* FeedParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */; };
@@ -27,6 +28,7 @@
 		767B84E13A26FB82687A5DD6 /* RecentCVEs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1CD7BCF5C83BFD0FEFEFF9 /* RecentCVEs.swift */; };
 		7B96BF914496914E3370A723 /* CVERecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC33A8ABB2C1E6F1E02F186 /* CVERecord.swift */; };
 		8267B30C26F2C920FD50E07D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AEB5D8DD01C4BA6E4382B2D5 /* PrivacyInfo.xcprivacy */; };
+		8CB501E27ECE9FC900E78F54 /* DashboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1132E2C64202A96E555EEC2C /* DashboardCard.swift */; };
 		8CF7067403A25716ABAD8DAE /* CVEStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DFB64FF4EBA60162C0EC680 /* CVEStore.swift */; };
 		8FD7E9B2340491B71A993A1F /* Scorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7EDF19F655196720043AAE /* Scorer.swift */; };
 		92F5D5EAA86C0ECF7B3477EC /* VolumeRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FBD9FCF72716ACDB692B398 /* VolumeRecord.swift */; };
@@ -72,6 +74,7 @@
 		07F50CB5C38DD1C5DEAD7114 /* ArticlesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArticlesView.swift; sourceTree = "<group>"; };
 		0F2EC68FB750A6713729D796 /* FetchCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCoordinator.swift; sourceTree = "<group>"; };
 		0FB6CB0DC1C50493D90C8104 /* CyberbitsDefcon.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CyberbitsDefcon.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1132E2C64202A96E555EEC2C /* DashboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardCard.swift; sourceTree = "<group>"; };
 		18B13C5679F02B1CFDC96EA2 /* DefconHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconHistory.swift; sourceTree = "<group>"; };
 		1C3320EB1F83B2451CBD6B55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParserTests.swift; sourceTree = "<group>"; };
@@ -116,6 +119,7 @@
 		EC7EDF19F655196720043AAE /* Scorer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Scorer.swift; sourceTree = "<group>"; };
 		EFC0271D91DAF63021271251 /* DedupStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DedupStore.swift; sourceTree = "<group>"; };
 		F22F7422824CDE4208EAB337 /* FeedParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParser.swift; sourceTree = "<group>"; };
+		FDD5F85D8FB546793E463957 /* RegexCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegexCache.swift; sourceTree = "<group>"; };
 		FF64E89E1AB6F4156AAE169B /* DefconStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconStore.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -123,6 +127,7 @@
 		1ACB65626F884CAB3BBF006E /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				1132E2C64202A96E555EEC2C /* DashboardCard.swift */,
 				745A5C6AA7CE058A7D7F9A54 /* DashboardView.swift */,
 				2D09E3F46F9D7697B4193E27 /* DefconGauge.swift */,
 				9C1CD7BCF5C83BFD0FEFEFF9 /* RecentCVEs.swift */,
@@ -140,6 +145,7 @@
 			children = (
 				A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */,
 				A30598B38389639349AEF656 /* DefconColors.swift */,
+				FDD5F85D8FB546793E463957 /* RegexCache.swift */,
 				01F204B9F0CB1FD4A1CBBD17 /* RelativeTime.swift */,
 			);
 			path = Shared;
@@ -388,6 +394,7 @@
 				7B96BF914496914E3370A723 /* CVERecord.swift in Sources */,
 				8CF7067403A25716ABAD8DAE /* CVEStore.swift in Sources */,
 				66CBC4522C51B337843AC1FC /* CyberbitsDefconApp.swift in Sources */,
+				8CB501E27ECE9FC900E78F54 /* DashboardCard.swift in Sources */,
 				9967415043DCF644256B299A /* DashboardView.swift in Sources */,
 				EB275902290144E3D31A9415 /* DedupRecord.swift in Sources */,
 				662CB8C081AA93DD2BCB9AE1 /* DedupStore.swift in Sources */,
@@ -404,6 +411,7 @@
 				1F891A4CE78492BE2566D9DD /* NotificationScheduler.swift in Sources */,
 				E3797B4E3E0EE94B5530DC74 /* RawArticle.swift in Sources */,
 				767B84E13A26FB82687A5DD6 /* RecentCVEs.swift in Sources */,
+				29DA28C491DA78848A93AACA /* RegexCache.swift in Sources */,
 				FEA9681AA072F3380578ED55 /* RelativeTime.swift in Sources */,
 				3781E6F246A03F0C0F53E323 /* RootView.swift in Sources */,
 				8FD7E9B2340491B71A993A1F /* Scorer.swift in Sources */,
@@ -532,7 +540,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = CyberbitsDefcon/Info.plist;
@@ -541,7 +549,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cyberbits.defcon;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -620,7 +628,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 2;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = CyberbitsDefcon/Info.plist;
@@ -629,7 +637,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.2;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.cyberbits.defcon;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

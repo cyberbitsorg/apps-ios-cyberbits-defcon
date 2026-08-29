@@ -86,19 +86,11 @@ enum Triggers {
             .firstMatch(in: title) != nil
     }
 
-    // MARK: - Regex cache
+    // MARK: - Regex access
 
-    private static var cache: [String: NSRegularExpression] = [:]
-    private static let cacheLock = NSLock()
-
+    /// Thin alias over the shared pattern cache (see `RegexCache.swift`).
     private static func regex(_ pattern: String) -> NSRegularExpression {
-        cacheLock.lock(); defer { cacheLock.unlock() }
-        if let r = cache[pattern] { return r }
-        // We pre-lowercase texts so caseInsensitive is redundant, but cheap.
-        let r = (try? NSRegularExpression(pattern: pattern, options: [.caseInsensitive, .dotMatchesLineSeparators]))
-            ?? NSRegularExpression()
-        cache[pattern] = r
-        return r
+        NSRegularExpression.cached(pattern)
     }
 
     // MARK: - Patterns

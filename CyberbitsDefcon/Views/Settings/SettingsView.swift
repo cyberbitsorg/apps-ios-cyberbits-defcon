@@ -6,11 +6,11 @@ struct SettingsView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var context
 
-    @AppStorage("refreshIntervalMinutes") private var refreshInterval: Int = 60
-    @AppStorage("defconNotificationsEnabled") private var defconNotificationsEnabled: Bool = true
-    @AppStorage("notificationThreshold") private var notificationThreshold: Int = 3
-    @AppStorage("newArticleNotificationsEnabled") private var newArticleNotificationsEnabled: Bool = true
-    @AppStorage("appearance") private var appearanceRaw: Int = AppearanceMode.system.rawValue
+    @AppStorage(AppSettings.Keys.refreshIntervalMinutes) private var refreshInterval = AppSettings.defaultRefreshIntervalMinutes
+    @AppStorage(AppSettings.Keys.defconNotificationsEnabled) private var defconNotificationsEnabled = true
+    @AppStorage(AppSettings.Keys.notificationThreshold) private var notificationThreshold = AppSettings.defaultNotificationThreshold
+    @AppStorage(AppSettings.Keys.newArticleNotificationsEnabled) private var newArticleNotificationsEnabled = true
+    @AppStorage(AppSettings.Keys.appearance) private var appearanceRaw = AppearanceMode.system.rawValue
 
     var body: some View {
         NavigationStack {
@@ -36,7 +36,7 @@ struct SettingsView: View {
                         }
                         Spacer()
                         Button {
-                            Task { await refresh() }
+                            Task { await appState.refresh(using: coordinator) }
                         } label: {
                             if appState.isRefreshing {
                                 ProgressView().controlSize(.small)
@@ -74,7 +74,7 @@ struct SettingsView: View {
 
                 Section("About") {
                     LabeledContent("App", value: "Cyberbits Defcon Dashboard")
-                    LabeledContent("Version", value: "1.0")
+                    LabeledContent("Version", value: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0")
                     if let url = URL(string: "https://cyberbits.systems") {
                         Link(destination: url) {
                             LabeledContent("Developer", value: "Cyberbits Systems")
@@ -85,12 +85,5 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
-    }
-
-    private func refresh() async {
-        guard !appState.isRefreshing else { return }
-        appState.isRefreshing = true
-        appState.defconStatus = await coordinator.runFetchCycle()
-        appState.isRefreshing = false
     }
 }

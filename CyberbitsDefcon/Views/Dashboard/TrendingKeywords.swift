@@ -29,11 +29,7 @@ struct TrendingKeywords: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("TRENDING KEYWORDS")
-                .font(.caption2.weight(.semibold))
-                .foregroundStyle(.secondary)
-                .tracking(1)
+        DashboardCard(title: "TRENDING KEYWORDS") {
             FlowLayout(spacing: 6) {
                 ForEach(keywords.prefix(12), id: \.word) { kw in
                     Text(kw.word)
@@ -44,9 +40,6 @@ struct TrendingKeywords: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color.adaptiveSurface, in: RoundedRectangle(cornerRadius: 12))
     }
 }
 
