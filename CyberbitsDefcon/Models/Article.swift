@@ -10,7 +10,6 @@ final class Article {
     var sourceRaw: String
     var publishedAt: Date
     var defconScore: Double
-    var categories: [String]
     var isRead: Bool
     var readAt: Date?
     var fingerprint: String
@@ -18,7 +17,7 @@ final class Article {
 
     init(guid: String, title: String, summary: String, url: URL,
          source: FeedSource, publishedAt: Date, defconScore: Double,
-         categories: [String], fingerprint: String, trigger: TriggerType? = nil) {
+         fingerprint: String, trigger: TriggerType? = nil) {
         self.guid = guid
         self.title = title
         self.summary = summary
@@ -26,7 +25,6 @@ final class Article {
         self.sourceRaw = source.rawValue
         self.publishedAt = publishedAt
         self.defconScore = defconScore
-        self.categories = categories
         self.isRead = false
         self.readAt = nil
         self.fingerprint = fingerprint

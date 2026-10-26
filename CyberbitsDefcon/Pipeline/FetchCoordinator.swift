@@ -49,6 +49,7 @@ actor FetchCoordinator {
         var acceptedFingerprints = Set<String>()
         var unique: [RawArticle] = []
         var acceptedCvesPerArticle: [Set<String>] = []
+        var acceptedFps: [String] = []
         var droppedGuid = 0, droppedBatchFp = 0, droppedExistingFp = 0, droppedNearDupe = 0
         for raw in allRaw {
             if existingGuids.contains(raw.guid) { droppedGuid += 1; continue }
@@ -65,6 +66,7 @@ actor FetchCoordinator {
             )
             if dedup.isDuplicate(raw) { droppedNearDupe += 1; continue }
             acceptedFingerprints.insert(fp)
+            acceptedFps.append(fp)
             corpusTitles.append(raw.title)
             corpusTokens.append(Deduplicator.tokenSet(raw.title))
             let cves = Deduplicator.extractCVEs("\(raw.title) \(raw.summary)")
@@ -75,12 +77,13 @@ actor FetchCoordinator {
         let newCount = unique.count
         Self.log.debug("dedup: new=\(newCount) droppedGuid=\(droppedGuid) droppedBatchFp=\(droppedBatchFp) droppedExistingFp=\(droppedExistingFp) droppedNearDupe=\(droppedNearDupe) dt=\(Int(Date().timeIntervalSince(t0)*1000))ms")
 
-        // 4. Score (v2 per-article: Track A trigger + Track B sub-scores) and store
+        // 4. Score (v2 per-article: Track A trigger + Track B sub-scores) and store.
+        //    The fingerprint from the dedup pass is reused — not recomputed — here.
         for (idx, raw) in unique.enumerated() {
             let result = Scorer.computeArticleScore(title: raw.title, summary: raw.summary)
-            ArticleStore.upsert(raw, score: result.score, trigger: result.trigger, context: modelContext)
-            DedupStore.record(fingerprint: Deduplicator.fingerprint(raw.title),
-                              title: raw.title, context: modelContext)
+            ArticleStore.upsert(raw, score: result.score, trigger: result.trigger,
+                                fingerprint: acceptedFps[idx], context: modelContext)
+            DedupStore.record(fingerprint: acceptedFps[idx], title: raw.title, context: modelContext)
             for cve in acceptedCvesPerArticle[idx] {
                 CVEStore.record(cve, context: modelContext)
             }

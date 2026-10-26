@@ -74,7 +74,10 @@ struct DefconGauge: View {
         .padding()
         .background(color.opacity(0.08), in: RoundedRectangle(cornerRadius: 16))
         .overlay(RoundedRectangle(cornerRadius: 16).stroke(color.opacity(0.25), lineWidth: 1))
-        .modifier(Defcon1Glow(active: level == 1))
+        .modifier(Defcon1Glow(active: level == 1, layers: [
+            .init(onOpacity: 0.95, offOpacity: 0.4, onRadius: 18, offRadius: 8),
+            .init(onOpacity: 0.6, offOpacity: 0.25, onRadius: 28, offRadius: 14),
+        ]))
     }
 
     private func driverRow(label: String, title: String?, publishedAt: Date?) -> some View {
@@ -176,7 +179,10 @@ private struct GaugeArc: View {
                         .padding(.top, 1)
                 }
                 .position(x: cx, y: cy + r * 0.5)
-                .modifier(Defcon1Glow(active: level == 1, mode: .text))
+                .modifier(Defcon1Glow(active: level == 1, layers: [
+                    .init(onOpacity: 0.95, offOpacity: 0.4, onRadius: 16, offRadius: 6),
+                    .init(onOpacity: 0.6, offOpacity: 0.25, onRadius: 24, offRadius: 10),
+                ]))
             }
         }
     }
@@ -224,33 +230,7 @@ private struct NeedleShape: Shape {
     }
 }
 
-// MARK: - DEFCON 1 pulse glow
-
-private struct Defcon1Glow: ViewModifier {
-    enum Mode { case container, text }
-    let active: Bool
-    var mode: Mode = .container
-    @State private var pulse = false
-
-    func body(content: Content) -> some View {
-        if !active {
-            content
-        } else {
-            content
-                .shadow(color: Color.defcon(2).opacity(pulse ? 0.95 : 0.4),
-                        radius: pulse ? (mode == .text ? 16 : 18) : (mode == .text ? 6 : 8),
-                        x: 0, y: 0)
-                .shadow(color: Color.defcon(2).opacity(pulse ? 0.6 : 0.25),
-                        radius: pulse ? (mode == .text ? 24 : 28) : (mode == .text ? 10 : 14),
-                        x: 0, y: 0)
-                .onAppear {
-                    withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
-                        pulse = true
-                    }
-                }
-        }
-    }
-}
+// MARK: - Preview
 
 #Preview {
     let breakdown = DefconBreakdown(weightedMax: 88, volumeBonus: 0,

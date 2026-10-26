@@ -3,16 +3,19 @@ import SwiftData
 
 enum ArticleStore {
 
-    static func upsert(_ raw: RawArticle, score: Double, trigger: TriggerType? = nil, context: ModelContext) {
+    /// Callers that already computed the title fingerprint (the fetch pipeline)
+    /// pass it in; otherwise it is derived from the title here.
+    static func upsert(_ raw: RawArticle, score: Double, trigger: TriggerType? = nil,
+                       fingerprint: String? = nil, context: ModelContext) {
         let guid = raw.guid
         var descriptor = FetchDescriptor<Article>(predicate: #Predicate { $0.guid == guid })
         descriptor.fetchLimit = 1
         guard (try? context.fetch(descriptor))?.isEmpty ?? true else { return }
 
-        let fp = Deduplicator.fingerprint(raw.title)
+        let fp = fingerprint ?? Deduplicator.fingerprint(raw.title)
         let article = Article(guid: raw.guid, title: raw.title, summary: raw.summary,
                               url: raw.url, source: raw.source, publishedAt: raw.publishedAt,
-                              defconScore: score, categories: raw.categories,
+                              defconScore: score,
                               fingerprint: fp, trigger: trigger)
         context.insert(article)
     }

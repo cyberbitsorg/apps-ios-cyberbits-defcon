@@ -7,5 +7,4 @@ struct RawArticle {
     let url: URL
     let source: FeedSource
     let publishedAt: Date
-    let categories: [String]
 }

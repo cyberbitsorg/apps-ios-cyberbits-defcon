@@ -24,8 +24,6 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>NSUserNotificationUsageDescription</key>
-	<string>Cyberbits DEFCON alerts you when the threat level rises.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

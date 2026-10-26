@@ -28,8 +28,7 @@ enum FeedParser {
                 summary: summary,
                 url: url,
                 source: .securityAffairs,
-                publishedAt: date,
-                categories: post.categories.map(String.init)
+                publishedAt: date
             )
         }
     }
@@ -40,7 +39,6 @@ enum FeedParser {
         let excerpt: RenderedField
         let link: String
         let date_gmt: String
-        let categories: [Int]
     }
 
     private struct RenderedField: Decodable {
@@ -58,7 +56,6 @@ private final class XMLFeedDelegate: NSObject, XMLParserDelegate {
     private var currentGuid = ""
     private var currentSummary = ""
     private var currentPubDate = ""
-    private var currentCategories: [String] = []
     private var isInsideItem = false
     private var isAtom = false
     private var pendingAtomLink = ""
@@ -81,13 +78,10 @@ private final class XMLFeedDelegate: NSObject, XMLParserDelegate {
         if currentElement == "item" || currentElement == "entry" {
             isInsideItem = true
             currentTitle = ""; currentLink = ""; currentGuid = ""
-            currentSummary = ""; currentPubDate = ""; currentCategories = []
+            currentSummary = ""; currentPubDate = ""
         }
         if isAtom && currentElement == "link", let href = attributes["href"], !href.isEmpty {
             pendingAtomLink = href
-        }
-        if currentElement == "category" {
-            if let term = attributes["term"] { currentCategories.append(term) }
         }
     }
 
@@ -101,7 +95,6 @@ private final class XMLFeedDelegate: NSObject, XMLParserDelegate {
         case "guid":     currentGuid     += s
         case "description", "summary": currentSummary += s
         case "pubdate", "published", "updated": currentPubDate += s
-        case "category": currentCategories.append(s)
         default: break
         }
     }
@@ -114,7 +107,7 @@ private final class XMLFeedDelegate: NSObject, XMLParserDelegate {
         defer {
             isInsideItem = false
             currentTitle = ""; currentLink = ""; currentGuid = ""
-            currentSummary = ""; currentPubDate = ""; currentCategories = []
+            currentSummary = ""; currentPubDate = ""
             pendingAtomLink = ""
         }
 
@@ -139,8 +132,7 @@ private final class XMLFeedDelegate: NSObject, XMLParserDelegate {
             summary: currentSummary.htmlStripped.trimmingCharacters(in: .whitespacesAndNewlines),
             url: url,
             source: source,
-            publishedAt: publishedAt,
-            categories: currentCategories
+            publishedAt: publishedAt
         ))
     }
 }

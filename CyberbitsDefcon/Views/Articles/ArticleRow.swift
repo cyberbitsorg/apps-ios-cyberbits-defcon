@@ -3,7 +3,6 @@ import SwiftUI
 struct ArticleRow: View {
     let article: Article
     let onToggleRead: () -> Void
-    @State private var pulse = false
     @Environment(\.colorScheme) private var colorScheme
 
     private var isDefcon1: Bool { article.defconLevel == 1 }
@@ -15,14 +14,9 @@ struct ArticleRow: View {
                 .frame(width: 3)
                 .cornerRadius(2)
                 .padding(.vertical, 4)
-                .shadow(color: isDefcon1 ? Color(hex: "dc2626").opacity(pulse ? 0.9 : 0.35) : .clear,
-                        radius: isDefcon1 ? (pulse ? 10 : 4) : 0)
-                .onAppear {
-                    guard isDefcon1 else { return }
-                    withAnimation(.easeInOut(duration: 2.5).repeatForever(autoreverses: true)) {
-                        pulse = true
-                    }
-                }
+                .modifier(Defcon1Glow(active: isDefcon1, layers: [
+                    .init(onOpacity: 0.9, offOpacity: 0.35, onRadius: 10, offRadius: 4),
+                ]))
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(alignment: .top) {
@@ -36,15 +30,16 @@ struct ArticleRow: View {
                         .foregroundStyle(Color.defconAdaptive(article.defconLevel, in: colorScheme))
                         .padding(.horizontal, 6).padding(.vertical, 2)
                         .background(Color.defcon(article.defconLevel)
-                            .opacity(isDefcon1 ? (pulse ? 0.45 : 0.15) : 0.15),
+                            .opacity(isDefcon1 ? 0.3 : 0.15),
                                     in: RoundedRectangle(cornerRadius: 5))
                         .overlay(
                             RoundedRectangle(cornerRadius: 5)
-                                .stroke(Color(hex: "dc2626").opacity(isDefcon1 ? (pulse ? 0.9 : 0.3) : 0),
+                                .stroke(Color(hex: "dc2626").opacity(isDefcon1 ? 0.6 : 0),
                                         lineWidth: isDefcon1 ? 1 : 0)
                         )
-                        .shadow(color: isDefcon1 ? Color(hex: "dc2626").opacity(pulse ? 0.7 : 0.2) : .clear,
-                                radius: isDefcon1 ? (pulse ? 8 : 3) : 0)
+                        .modifier(Defcon1Glow(active: isDefcon1, layers: [
+                            .init(onOpacity: 0.7, offOpacity: 0.2, onRadius: 8, offRadius: 3),
+                        ]))
                 }
                 HStack {
                     // Uniform slate-300 badge across all sources — intentional, matches docker fallback.

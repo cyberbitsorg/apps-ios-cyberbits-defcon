@@ -28,6 +28,7 @@
 		767B84E13A26FB82687A5DD6 /* RecentCVEs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9C1CD7BCF5C83BFD0FEFEFF9 /* RecentCVEs.swift */; };
 		7B96BF914496914E3370A723 /* CVERecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FC33A8ABB2C1E6F1E02F186 /* CVERecord.swift */; };
 		8267B30C26F2C920FD50E07D /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = AEB5D8DD01C4BA6E4382B2D5 /* PrivacyInfo.xcprivacy */; };
+		86390BBCA431A36D3604570D /* Defcon1Glow.swift in Sources */ = {isa = PBXBuildFile; fileRef = B632FD85B44D69F883F154BF /* Defcon1Glow.swift */; };
 		8CB501E27ECE9FC900E78F54 /* DashboardCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1132E2C64202A96E555EEC2C /* DashboardCard.swift */; };
 		8CF7067403A25716ABAD8DAE /* CVEStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DFB64FF4EBA60162C0EC680 /* CVEStore.swift */; };
 		8FD7E9B2340491B71A993A1F /* Scorer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7EDF19F655196720043AAE /* Scorer.swift */; };
@@ -109,6 +110,7 @@
 		A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		A67E663353A9B90DF4A66E68 /* SeverityBreakdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeverityBreakdown.swift; sourceTree = "<group>"; };
 		AEB5D8DD01C4BA6E4382B2D5 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		B632FD85B44D69F883F154BF /* Defcon1Glow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Defcon1Glow.swift; sourceTree = "<group>"; };
 		BB5CB3A2C9FCEB3619D44D83 /* DataStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataStoreTests.swift; sourceTree = "<group>"; };
 		C369D41E7B41B02004A8BF65 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
 		C39F381C97107D22C9237201 /* DefconStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconStatus.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */,
+				B632FD85B44D69F883F154BF /* Defcon1Glow.swift */,
 				A30598B38389639349AEF656 /* DefconColors.swift */,
 				FDD5F85D8FB546793E463957 /* RegexCache.swift */,
 				01F204B9F0CB1FD4A1CBBD17 /* RelativeTime.swift */,
@@ -399,6 +402,7 @@
 				EB275902290144E3D31A9415 /* DedupRecord.swift in Sources */,
 				662CB8C081AA93DD2BCB9AE1 /* DedupStore.swift in Sources */,
 				27DF2B6E7FF05B061B85668A /* Deduplicator.swift in Sources */,
+				86390BBCA431A36D3604570D /* Defcon1Glow.swift in Sources */,
 				59544305AD9F8F68FEF69836 /* DefconColors.swift in Sources */,
 				14089C19FF5F1701D57EDB9D /* DefconGauge.swift in Sources */,
 				BA91F31CA764BB2D777666DA /* DefconHistory.swift in Sources */,

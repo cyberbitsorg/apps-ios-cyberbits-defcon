@@ -59,7 +59,7 @@ final class FeedParserTests: XCTestCase {
     func test_json_parsesPost() async throws {
         let json = """
         [{"id":12345,"title":{"rendered":"SA Article"},"excerpt":{"rendered":"<p>Summary text</p>"},
-          "link":"https://securityaffairs.com/12345","date_gmt":"2024-01-01T12:00:00","categories":[99]}]
+          "link":"https://securityaffairs.com/12345","date_gmt":"2024-01-01T12:00:00"}]
         """.data(using: .utf8)!
         let articles = try FeedParser.parseSecurityAffairs(jsonData: json)
         XCTAssertEqual(articles.count, 1)

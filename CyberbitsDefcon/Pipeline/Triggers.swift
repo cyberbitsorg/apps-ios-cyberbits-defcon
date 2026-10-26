@@ -74,23 +74,16 @@ enum Triggers {
     }
 
     static func isContestContext(_ text: String) -> Bool {
-        regex(contestPattern).firstMatch(in: text) != nil
+        NSRegularExpression.cached(contestPattern).firstMatch(in: text) != nil
     }
 
     static func hasScopeAmplifier(_ text: String) -> Bool {
-        regex(scopeAmplifierPattern).firstMatch(in: text) != nil
+        NSRegularExpression.cached(scopeAmplifierPattern).firstMatch(in: text) != nil
     }
 
     static func isNewsletterTitle(_ title: String) -> Bool {
-        regex(#"\bnewsletter\b|\bround\s+\d+\b|\bweekly\s+(roundup|recap|digest)\b|\bweek in (review|security)\b"#)
+        NSRegularExpression.cached(#"\bnewsletter\b|\bround\s+\d+\b|\bweekly\s+(roundup|recap|digest)\b|\bweek in (review|security)\b"#)
             .firstMatch(in: title) != nil
-    }
-
-    // MARK: - Regex access
-
-    /// Thin alias over the shared pattern cache (see `RegexCache.swift`).
-    private static func regex(_ pattern: String) -> NSRegularExpression {
-        NSRegularExpression.cached(pattern)
     }
 
     // MARK: - Patterns
@@ -209,7 +202,7 @@ enum Triggers {
         switch trigger {
         case .activeExploitation:
             for pattern in activeExploitationPatterns {
-                let matches = regex(pattern).allMatches(in: text)
+                let matches = NSRegularExpression.cached(pattern).allMatches(in: text)
                 for m in matches where !isNegated(text, start: m.range.location, end: m.range.upperBound) {
                     return text.substring(m.range)
                 }
@@ -218,61 +211,61 @@ enum Triggers {
 
         case .kevAddition:
             for pattern in kevPatterns {
-                if let m = regex(pattern).firstMatch(in: text) {
+                if let m = NSRegularExpression.cached(pattern).firstMatch(in: text) {
                     return text.substring(m.range)
                 }
             }
             return nil
 
         case .confirmedBreach:
-            guard let verb = regex(breachVerbPattern).firstMatch(in: text) else { return nil }
+            guard let verb = NSRegularExpression.cached(breachVerbPattern).firstMatch(in: text) else { return nil }
             let hasScale =
-                regex(breachScaleMillionsPattern).firstMatch(in: text) != nil ||
-                regex(breachScaleNumericPattern).firstMatch(in: text) != nil ||
-                regex(breachScaleCommaPattern).firstMatch(in: text) != nil ||
-                regex(criticalSectorPattern).firstMatch(in: text) != nil
+                NSRegularExpression.cached(breachScaleMillionsPattern).firstMatch(in: text) != nil ||
+                NSRegularExpression.cached(breachScaleNumericPattern).firstMatch(in: text) != nil ||
+                NSRegularExpression.cached(breachScaleCommaPattern).firstMatch(in: text) != nil ||
+                NSRegularExpression.cached(criticalSectorPattern).firstMatch(in: text) != nil
             guard hasScale else { return nil }
             return text.substring(verb.range)
 
         case .aptCampaign:
-            let hint = regex(aptHintsPattern).firstMatch(in: text)
-                ?? regex(threatActorPattern).firstMatch(in: text)
+            let hint = NSRegularExpression.cached(aptHintsPattern).firstMatch(in: text)
+                ?? NSRegularExpression.cached(threatActorPattern).firstMatch(in: text)
             guard let hint else { return nil }
-            guard regex(aptVerbPattern).firstMatch(in: text) != nil else { return nil }
+            guard NSRegularExpression.cached(aptVerbPattern).firstMatch(in: text) != nil else { return nil }
             let hasTarget =
-                regex(criticalSectorPattern).firstMatch(in: text) != nil ||
-                regex(aptBreachVerbPattern).firstMatch(in: text) != nil
+                NSRegularExpression.cached(criticalSectorPattern).firstMatch(in: text) != nil ||
+                NSRegularExpression.cached(aptBreachVerbPattern).firstMatch(in: text) != nil
             guard hasTarget else { return nil }
             return text.substring(hint.range)
 
         case .criticalScopeVuln:
-            guard let vuln = regex(vulnKeywordPattern).firstMatch(in: text) else { return nil }
+            guard let vuln = NSRegularExpression.cached(vulnKeywordPattern).firstMatch(in: text) else { return nil }
             guard hasScopeAmplifier(text) else { return nil }
             return text.substring(vuln.range)
 
         case .ceilingCvss:
-            guard let m = regex(ceilingCvssPattern).firstMatch(in: text) else { return nil }
+            guard let m = NSRegularExpression.cached(ceilingCvssPattern).firstMatch(in: text) else { return nil }
             return text.substring(m.range)
 
         case .supplyChainCompromise:
-            guard let artifact = regex(supplyChainArtifactPattern).firstMatch(in: text) else { return nil }
-            guard regex(supplyChainBadnessPattern).firstMatch(in: text) != nil else { return nil }
-            guard regex(supplyChainScalePattern).firstMatch(in: text) != nil else { return nil }
+            guard let artifact = NSRegularExpression.cached(supplyChainArtifactPattern).firstMatch(in: text) else { return nil }
+            guard NSRegularExpression.cached(supplyChainBadnessPattern).firstMatch(in: text) != nil else { return nil }
+            guard NSRegularExpression.cached(supplyChainScalePattern).firstMatch(in: text) != nil else { return nil }
             return text.substring(artifact.range)
 
         case .publicExploit:
             // A release signal alone is generic — require a concrete vuln indicator.
-            guard regex(exploitVulnIndicatorPattern).firstMatch(in: text) != nil else { return nil }
+            guard NSRegularExpression.cached(exploitVulnIndicatorPattern).firstMatch(in: text) != nil else { return nil }
             for pattern in publicExploitReleasePatterns {
-                for m in regex(pattern).allMatches(in: text) {
+                for m in NSRegularExpression.cached(pattern).allMatches(in: text) {
                     let span = text.substring(m.range)
                     // Pre-window negation ("no public exploit") — 30 chars before the
                     // match start only (docker `_is_negated(text, m.start())` with no
                     // post-window). Plus intra-span negation ("exploit ... not released").
                     let windowStart = max(0, m.range.location - 30)
                     let preRange = NSRange(location: windowStart, length: m.range.location - windowStart)
-                    let preNegated = regex(negationPattern).firstMatch(in: text, options: [], range: preRange) != nil
-                    let spanNegated = regex(negationPattern).firstMatch(in: span) != nil
+                    let preNegated = NSRegularExpression.cached(negationPattern).firstMatch(in: text, options: [], range: preRange) != nil
+                    let spanNegated = NSRegularExpression.cached(negationPattern).firstMatch(in: span) != nil
                     if preNegated || spanNegated { continue }
                     return span
                 }
@@ -280,10 +273,10 @@ enum Triggers {
             return nil
 
         case .malwareCampaign:
-            let noun = regex(malwareNounPattern).firstMatch(in: text)
-                ?? regex(knownStealerPattern).firstMatch(in: text)
+            let noun = NSRegularExpression.cached(malwareNounPattern).firstMatch(in: text)
+                ?? NSRegularExpression.cached(knownStealerPattern).firstMatch(in: text)
             guard let noun else { return nil }
-            guard regex(campaignVerbPattern).firstMatch(in: text) != nil else { return nil }
+            guard NSRegularExpression.cached(campaignVerbPattern).firstMatch(in: text) != nil else { return nil }
             return text.substring(noun.range)
         }
     }
@@ -292,10 +285,10 @@ enum Triggers {
         let windowStart = max(0, start - 30)
         let preNS = NSString(string: text)
         let preRange = NSRange(location: windowStart, length: start - windowStart)
-        if regex(negationPattern).firstMatch(in: text, options: [], range: preRange) != nil { return true }
+        if NSRegularExpression.cached(negationPattern).firstMatch(in: text, options: [], range: preRange) != nil { return true }
         let windowEnd = min(preNS.length, end + 60)
         let postRange = NSRange(location: end, length: max(0, windowEnd - end))
-        if regex(negationPattern).firstMatch(in: text, options: [], range: postRange) != nil { return true }
+        if NSRegularExpression.cached(negationPattern).firstMatch(in: text, options: [], range: postRange) != nil { return true }
         return false
     }
 }

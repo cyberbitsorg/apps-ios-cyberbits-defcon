@@ -7,9 +7,7 @@ enum RelativeTime {
     static func format(_ date: Date, reference: Date = Date()) -> String {
         let seconds = Int(reference.timeIntervalSince(date))
         switch seconds {
-        case ..<0:
-            return "Just now"
-        case 0..<60:
+        case ..<60:
             return "Just now"
         case 60..<3600:
             let minutes = seconds / 60

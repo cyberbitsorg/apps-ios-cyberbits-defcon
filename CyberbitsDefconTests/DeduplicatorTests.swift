@@ -77,6 +77,6 @@ final class DeduplicatorTests: XCTestCase {
     private func makeArticle(title: String) -> RawArticle {
         RawArticle(guid: UUID().uuidString, title: title, summary: "",
                    url: URL(string: "https://example.com")!, source: .hackread,
-                   publishedAt: Date(), categories: [])
+                   publishedAt: Date())
     }
 }

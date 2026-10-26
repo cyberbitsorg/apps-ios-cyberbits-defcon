@@ -17,7 +17,7 @@ final class DataStoreTests: XCTestCase {
     func test_upsert_insertsNewArticle() throws {
         let raw = RawArticle(guid: "abc", title: "Test", summary: "Sum",
                              url: URL(string: "https://x.com")!, source: .hackread,
-                             publishedAt: Date(), categories: [])
+                             publishedAt: Date())
         ArticleStore.upsert(raw, score: 55.0, context: context)
         try context.save()
 
@@ -30,7 +30,7 @@ final class DataStoreTests: XCTestCase {
     func test_upsert_skipsExistingGuid() throws {
         let raw = RawArticle(guid: "abc", title: "Test", summary: "Sum",
                              url: URL(string: "https://x.com")!, source: .hackread,
-                             publishedAt: Date(), categories: [])
+                             publishedAt: Date())
         ArticleStore.upsert(raw, score: 55.0, context: context)
         ArticleStore.upsert(raw, score: 60.0, context: context)
         try context.save()
@@ -45,7 +45,7 @@ final class DataStoreTests: XCTestCase {
             let source = sources[i % sources.count]
             let raw = RawArticle(guid: "g\(i)", title: "Article \(i)", summary: "",
                                  url: URL(string: "https://x.com/\(i)")!, source: source,
-                                 publishedAt: Date().addingTimeInterval(Double(i)), categories: [])
+                                 publishedAt: Date().addingTimeInterval(Double(i)))
             ArticleStore.upsert(raw, score: 50, context: context)
         }
         try context.save()
@@ -64,7 +64,7 @@ final class DataStoreTests: XCTestCase {
         for i in 0..<20 {
             let raw = RawArticle(guid: "g\(i)", title: "Article \(i)", summary: "",
                                  url: URL(string: "https://x.com/\(i)")!, source: .hackread,
-                                 publishedAt: Date().addingTimeInterval(Double(i)), categories: [])
+                                 publishedAt: Date().addingTimeInterval(Double(i)))
             ArticleStore.upsert(raw, score: 50, context: context)
         }
         try context.save()

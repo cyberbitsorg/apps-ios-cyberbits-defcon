@@ -34,7 +34,6 @@ targets:
           - processing
         BGTaskSchedulerPermittedIdentifiers:
           - com.cyberbits.defcon.refresh
-        NSUserNotificationUsageDescription: "Cyberbits DEFCON alerts you when the threat level rises."
         UIRequiredDeviceCapabilities:
           - arm64
         UISupportedInterfaceOrientations:

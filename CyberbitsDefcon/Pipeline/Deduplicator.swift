@@ -122,9 +122,10 @@ struct Deduplicator {
             // L0b — shared threat actor + any other token
             if Deduplicator.sharedActorAndToken(article.title, existing) { return true }
 
+            let existingTokens = recentTokens?[i] ?? Deduplicator.tokenSet(existing)
+
             // L0c — shared vendor+product pair + any other token
             if let pair = Deduplicator.sharedVendorProduct(article.title, existing) {
-                let existingTokens = recentTokens?[i] ?? Deduplicator.tokenSet(existing)
                 let pairTokens = Set(pair.split(separator: " ").map(String.init))
                 let sharedExtra = (newTokens.subtracting(pairTokens))
                     .intersection(existingTokens.subtracting(pairTokens))
@@ -132,7 +133,6 @@ struct Deduplicator {
             }
 
             // L2-J — Jaccard
-            let existingTokens = recentTokens?[i] ?? Deduplicator.tokenSet(existing)
             if Deduplicator.jaccard(newTokens, existingTokens) >= Deduplicator.jaccardThreshold {
                 return true
             }
