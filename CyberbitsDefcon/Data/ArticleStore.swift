@@ -6,7 +6,7 @@ enum ArticleStore {
     /// Callers that already computed the title fingerprint (the fetch pipeline)
     /// pass it in; otherwise it is derived from the title here.
     static func upsert(_ raw: RawArticle, score: Double, trigger: TriggerType? = nil,
-                       fingerprint: String? = nil, context: ModelContext) {
+                       fingerprint: String? = nil, tags: [String] = [], context: ModelContext) {
         let guid = raw.guid
         var descriptor = FetchDescriptor<Article>(predicate: #Predicate { $0.guid == guid })
         descriptor.fetchLimit = 1
@@ -16,7 +16,7 @@ enum ArticleStore {
         let article = Article(guid: raw.guid, title: raw.title, summary: raw.summary,
                               url: raw.url, source: raw.source, publishedAt: raw.publishedAt,
                               defconScore: score,
-                              fingerprint: fp, trigger: trigger)
+                              fingerprint: fp, trigger: trigger, tags: tags)
         context.insert(article)
     }
 

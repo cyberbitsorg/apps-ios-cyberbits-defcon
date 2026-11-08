@@ -14,6 +14,7 @@
 		27DF2B6E7FF05B061B85668A /* Deduplicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49D8921878DB8E3A41E7868B /* Deduplicator.swift */; };
 		2839E0C0F03EB2CBA3044B17 /* ArticleStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 554433608127759E23797870 /* ArticleStore.swift */; };
 		29DA28C491DA78848A93AACA /* RegexCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD5F85D8FB546793E463957 /* RegexCache.swift */; };
+		2E477D205E35F2316BE40611 /* VocabularyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 148DD4E66D0EC8873F9D7476 /* VocabularyTests.swift */; };
 		373E6BF63B27B73FD4494F5B /* ArticlesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07F50CB5C38DD1C5DEAD7114 /* ArticlesView.swift */; };
 		3781E6F246A03F0C0F53E323 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C369D41E7B41B02004A8BF65 /* RootView.swift */; };
 		3B1A60B0B6EC927A0C42C19E /* FeedParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */; };
@@ -53,7 +54,9 @@
 		E710BE413ECB1DC51416729A /* Triggers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 200B18054049C34B08FF9413 /* Triggers.swift */; };
 		EB275902290144E3D31A9415 /* DedupRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = D641C0D7944708831162BA23 /* DedupRecord.swift */; };
 		ECBAEA63E2846F1EDC22D354 /* DefconStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF64E89E1AB6F4156AAE169B /* DefconStore.swift */; };
+		EDC2A47A17217BE0ABA553F4 /* TaggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4789D1563CE310D3E210C08A /* TaggerTests.swift */; };
 		EECC865F2740EBE667334800 /* ArticleRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = C660A11670C090E823832ABB /* ArticleRow.swift */; };
+		F1E7C3AC956BD5936B0ABD29 /* Tagger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85663CF3B1CFF11F534B5CBC /* Tagger.swift */; };
 		F381F8D5090C04E9180CC30E /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A5CAAFAA8CB1E294A9F5BE1F /* AppSettings.swift */; };
 		F9787FA8944EF4A9C36D5315 /* SourceDistribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 688C0CA42AD70850EA84E429 /* SourceDistribution.swift */; };
 		FEA9681AA072F3380578ED55 /* RelativeTime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F204B9F0CB1FD4A1CBBD17 /* RelativeTime.swift */; };
@@ -76,6 +79,7 @@
 		0F2EC68FB750A6713729D796 /* FetchCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCoordinator.swift; sourceTree = "<group>"; };
 		0FB6CB0DC1C50493D90C8104 /* CyberbitsDefcon.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CyberbitsDefcon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1132E2C64202A96E555EEC2C /* DashboardCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardCard.swift; sourceTree = "<group>"; };
+		148DD4E66D0EC8873F9D7476 /* VocabularyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VocabularyTests.swift; sourceTree = "<group>"; };
 		18B13C5679F02B1CFDC96EA2 /* DefconHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefconHistory.swift; sourceTree = "<group>"; };
 		1C3320EB1F83B2451CBD6B55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedParserTests.swift; sourceTree = "<group>"; };
@@ -86,6 +90,7 @@
 		346D3D46C7834B6FE198030B /* RawArticle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RawArticle.swift; sourceTree = "<group>"; };
 		3538B35F55E34AE9E3465447 /* StickyLevelRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StickyLevelRecord.swift; sourceTree = "<group>"; };
 		3DFB64FF4EBA60162C0EC680 /* CVEStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVEStore.swift; sourceTree = "<group>"; };
+		4789D1563CE310D3E210C08A /* TaggerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaggerTests.swift; sourceTree = "<group>"; };
 		49D8921878DB8E3A41E7868B /* Deduplicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Deduplicator.swift; sourceTree = "<group>"; };
 		4F34F4E34874E364306B9595 /* FeedSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedSource.swift; sourceTree = "<group>"; };
 		4FBD9FCF72716ACDB692B398 /* VolumeRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeRecord.swift; sourceTree = "<group>"; };
@@ -100,6 +105,7 @@
 		7901B71EEA9C225E1A9B78A4 /* DeduplicatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeduplicatorTests.swift; sourceTree = "<group>"; };
 		7DE6FAC5F535D1E564F8BDE9 /* Vocabulary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Vocabulary.swift; sourceTree = "<group>"; };
 		80E773D9C9AE524E313F2C95 /* NotificationScheduler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationScheduler.swift; sourceTree = "<group>"; };
+		85663CF3B1CFF11F534B5CBC /* Tagger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tagger.swift; sourceTree = "<group>"; };
 		8FC33A8ABB2C1E6F1E02F186 /* CVERecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CVERecord.swift; sourceTree = "<group>"; };
 		900A7A3B530DC09C9227CE3C /* VolumeStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeStore.swift; sourceTree = "<group>"; };
 		94D8892E7163E564C5837964 /* CyberbitsDefconApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyberbitsDefconApp.swift; sourceTree = "<group>"; };
@@ -216,7 +222,9 @@
 				7901B71EEA9C225E1A9B78A4 /* DeduplicatorTests.swift */,
 				1F4D10E72C89555F3891E5EF /* FeedParserTests.swift */,
 				27FC2E3D07513FD08F12B9BC /* ScorerTests.swift */,
+				4789D1563CE310D3E210C08A /* TaggerTests.swift */,
 				5EFFB302832CEB5EFFC0987C /* TriggersTests.swift */,
+				148DD4E66D0EC8873F9D7476 /* VocabularyTests.swift */,
 			);
 			path = CyberbitsDefconTests;
 			sourceTree = "<group>";
@@ -242,6 +250,7 @@
 				80E773D9C9AE524E313F2C95 /* NotificationScheduler.swift */,
 				EC7EDF19F655196720043AAE /* Scorer.swift */,
 				63159BFB8444D3F478E2256A /* StickyLevel.swift */,
+				85663CF3B1CFF11F534B5CBC /* Tagger.swift */,
 				200B18054049C34B08FF9413 /* Triggers.swift */,
 				7DE6FAC5F535D1E564F8BDE9 /* Vocabulary.swift */,
 			);
@@ -380,7 +389,9 @@
 				5B59892540B1E8DA6B0DCACA /* DeduplicatorTests.swift in Sources */,
 				3B1A60B0B6EC927A0C42C19E /* FeedParserTests.swift in Sources */,
 				9A0A37576A0CA19B7F64A4AE /* ScorerTests.swift in Sources */,
+				EDC2A47A17217BE0ABA553F4 /* TaggerTests.swift in Sources */,
 				D2404CB95845EE4C6D3A140D /* TriggersTests.swift in Sources */,
+				2E477D205E35F2316BE40611 /* VocabularyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -424,6 +435,7 @@
 				F9787FA8944EF4A9C36D5315 /* SourceDistribution.swift in Sources */,
 				D33728D933325B71D4FD6829 /* StickyLevel.swift in Sources */,
 				4D145103D9F03EC820E0C24F /* StickyLevelRecord.swift in Sources */,
+				F1E7C3AC956BD5936B0ABD29 /* Tagger.swift in Sources */,
 				9430951FE31F05CAE65CB773 /* ThreatIndicators.swift in Sources */,
 				DA0CCF60BEC7CE2F0427E128 /* TopThreatsWidget.swift in Sources */,
 				16B958774D8AAE0C32BEB8F4 /* TrendingKeywords.swift in Sources */,

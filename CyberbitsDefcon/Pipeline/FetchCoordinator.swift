@@ -79,10 +79,12 @@ actor FetchCoordinator {
 
         // 4. Score (v2 per-article: Track A trigger + Track B sub-scores) and store.
         //    The fingerprint from the dedup pass is reused — not recomputed — here.
+        //    Tags are content-based category labels (docker `classify_tags` in normalize).
         for (idx, raw) in unique.enumerated() {
             let result = Scorer.computeArticleScore(title: raw.title, summary: raw.summary)
+            let tags = Tagger.classifyTags(title: raw.title, summary: raw.summary)
             ArticleStore.upsert(raw, score: result.score, trigger: result.trigger,
-                                fingerprint: acceptedFps[idx], context: modelContext)
+                                fingerprint: acceptedFps[idx], tags: tags, context: modelContext)
             DedupStore.record(fingerprint: acceptedFps[idx], title: raw.title, context: modelContext)
             for cve in acceptedCvesPerArticle[idx] {
                 CVEStore.record(cve, context: modelContext)

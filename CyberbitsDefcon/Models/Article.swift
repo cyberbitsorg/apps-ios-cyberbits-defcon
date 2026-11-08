@@ -14,10 +14,11 @@ final class Article {
     var readAt: Date?
     var fingerprint: String
     var triggerRaw: String?
+    var tags: [String] = []
 
     init(guid: String, title: String, summary: String, url: URL,
          source: FeedSource, publishedAt: Date, defconScore: Double,
-         fingerprint: String, trigger: TriggerType? = nil) {
+         fingerprint: String, trigger: TriggerType? = nil, tags: [String] = []) {
         self.guid = guid
         self.title = title
         self.summary = summary
@@ -29,6 +30,7 @@ final class Article {
         self.readAt = nil
         self.fingerprint = fingerprint
         self.triggerRaw = trigger?.rawValue
+        self.tags = tags
     }
 
     /// Malformed persisted URLs fall back to the Cyberbits homepage rather than

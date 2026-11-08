@@ -65,6 +65,20 @@ struct ArticleRow: View {
                             .foregroundStyle(.tertiary)
                     }
                 }
+                // Category tags (docker card pills): right-aligned footer line, gray chips.
+                if !article.tags.isEmpty {
+                    HStack(spacing: 4) {
+                        Spacer(minLength: 0)
+                        ForEach(article.tags, id: \.self) { tag in
+                            Text(Vocabulary.tagDisplayLabels[tag] ?? tag)
+                                .font(.system(size: 10, weight: .medium))
+                                .lineLimit(1)
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 8).padding(.vertical, 3)
+                                .background(Color.primary.opacity(0.06), in: Capsule())
+                        }
+                    }
+                }
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
